@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="28.376300811767578" height="28.473297119140625" viewBox="0.19590002298355103 1.0185999870300293 28.376300811767578 28.473297119140625">
+  <defs>
+    <linearGradient id="grad_1" y2="1" x2="0">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="grad_2" y2="1" x2="0">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="grad_3" y2="1" x2="0">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="grad_4" y2="1" x2="0">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </linearGradient>
+  <linearGradient id="grad_1-0.6139851808547974,-0.5244435667991638,-0.5244435667991638,0.6139851808547974,61.6,9.5" y2="24.8919" x2="8.6298" x1="24.94" y1="5.797" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </linearGradient><linearGradient id="grad_2-0.6139851808547974,-0.5244435667991638,-0.5244435667991638,0.6139851808547974,63.1,13.6" y2="28.9919" x2="10.1298" x1="26.44" y1="9.897" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </linearGradient><linearGradient id="grad_3-0.6139851808547974,-0.5244435667991638,-0.5244435667991638,0.6139851808547974,57.35,8.5" y2="23.8919" x2="4.3798" x1="20.69" y1="4.797" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </linearGradient><linearGradient id="grad_4-0.6139851808547974,-0.5244435667991638,-0.5244435667991638,0.6139851808547974,58.5,12.3" y2="27.6919" x2="5.5298" x1="21.84" y1="8.597" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </linearGradient></defs>
+  <!-- Exported by Scratch - http://scratch.mit.edu/ -->
+  <g id="ID0.0898084519430995">
+    <g id="ID0.44690914265811443">
+      <g id="ID0.47744428273290396">
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="#660000" stroke="#000000" stroke-width="0.0069370854955382545" d="M 13.9898 18.3968 L 14.0001 18.4371 L 13.7911 18.4906 L 13.7808 18.4503 L 13.9898 18.3968 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.0069370854955382545" stroke-linecap="round" d="M 13.9974 18.4152 L 14.0213 18.3966 "/>
+        </g>
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="#660000" stroke="#000000" stroke-width="0.006937085141523466" d="M 14.0881 18.7041 L 14.1204 18.7303 L 13.9842 18.8977 L 13.952 18.8715 L 14.0881 18.7041 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.006937085141523466" stroke-linecap="round" d="M 14.1051 18.7144 L 14.1132 18.6852 "/>
+        </g>
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="url(#grad_1-0.6139851808547974,-0.5244435667991638,-0.5244435667991638,0.6139851808547974,61.6,9.5)" stroke="#000000" stroke-width="0.807476846148747" d="M 24.94 5.797 L 21.2561 2.6503 L 4.9459 21.7453 L 8.6298 24.8919 L 24.94 5.797 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.807476846148747" stroke-linecap="round" d="M 23.3999 4.0567 L 26.5722 2.5186 "/>
+        </g>
+      </g>
+      <text id="ID0.9592428067699075" fill="#FFFFFF" text-anchor="start" font-family="Serif" font-size="22" transform="matrix(0.116441 -0.141805 0.141805 0.116441 9.36566 15.0006)" stroke-width="1" alignment-baseline="text-before-edge" xml:space="preserve"><tspan x="0" style="white-space: pre" dy="1.25em">TNT</tspan></text>
+    </g>
+    <g id="ID0.44690914265811443">
+      <g id="ID0.47744428273290396">
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="#660000" stroke="#000000" stroke-width="0.0069370854955382545" d="M 15.4898 22.4968 L 15.5001 22.5371 L 15.2911 22.5906 L 15.2808 22.5503 L 15.4898 22.4968 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.0069370854955382545" stroke-linecap="round" d="M 15.4974 22.5152 L 15.5213 22.4966 "/>
+        </g>
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="#660000" stroke="#000000" stroke-width="0.006937085141523466" d="M 15.5881 22.8041 L 15.6204 22.8303 L 15.4842 22.9977 L 15.452 22.9715 L 15.5881 22.8041 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.006937085141523466" stroke-linecap="round" d="M 15.6051 22.8144 L 15.6132 22.7852 "/>
+        </g>
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="url(#grad_2-0.6139851808547974,-0.5244435667991638,-0.5244435667991638,0.6139851808547974,63.1,13.6)" stroke="#000000" stroke-width="0.807476846148747" d="M 26.44 9.897 L 22.7561 6.7503 L 6.4459 25.8453 L 10.1298 28.9919 L 26.44 9.897 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.807476846148747" stroke-linecap="round" d="M 24.8999 8.1567 L 28.0722 6.6186 "/>
+        </g>
+      </g>
+      <text id="ID0.9592428067699075" fill="#FFFFFF" text-anchor="start" font-family="Serif" font-size="22" transform="matrix(0.116441 -0.141805 0.141805 0.116441 10.8657 19.1506)" stroke-width="1" alignment-baseline="text-before-edge" xml:space="preserve"><tspan x="0" style="white-space: pre" dy="1.25em">TNT</tspan></text>
+    </g>
+    <g id="ID0.44690914265811443">
+      <g id="ID0.47744428273290396">
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="#660000" stroke="#000000" stroke-width="0.0069370854955382545" d="M 9.7398 17.3968 L 9.7501 17.4371 L 9.5411 17.4906 L 9.5308 17.4503 L 9.7398 17.3968 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.0069370854955382545" stroke-linecap="round" d="M 9.7474 17.4152 L 9.7713 17.3966 "/>
+        </g>
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="#660000" stroke="#000000" stroke-width="0.006937085141523466" d="M 9.8381 17.7041 L 9.8704 17.7303 L 9.7342 17.8977 L 9.702 17.8715 L 9.8381 17.7041 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.006937085141523466" stroke-linecap="round" d="M 9.8551 17.7144 L 9.8632 17.6852 "/>
+        </g>
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="url(#grad_3-0.6139851808547974,-0.5244435667991638,-0.5244435667991638,0.6139851808547974,57.35,8.5)" stroke="#000000" stroke-width="0.807476846148747" d="M 20.69 4.797 L 17.0061 1.6503 L 0.6959 20.7453 L 4.3798 23.8919 L 20.69 4.797 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.807476846148747" stroke-linecap="round" d="M 19.1499 3.0567 L 22.3222 1.5186 "/>
+        </g>
+      </g>
+      <text id="ID0.9592428067699075" fill="#FFFFFF" text-anchor="start" font-family="Serif" font-size="22" transform="matrix(0.116441 -0.141805 0.141805 0.116441 5.11566 14.0006)" stroke-width="1" alignment-baseline="text-before-edge" xml:space="preserve"><tspan x="0" style="white-space: pre" dy="1.25em">TNT</tspan></text>
+    </g>
+    <g id="ID0.44690914265811443">
+      <g id="ID0.47744428273290396">
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="#660000" stroke="#000000" stroke-width="0.0069370854955382545" d="M 10.8898 21.1968 L 10.9001 21.2371 L 10.6911 21.2906 L 10.6808 21.2503 L 10.8898 21.1968 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.0069370854955382545" stroke-linecap="round" d="M 10.8974 21.2152 L 10.9213 21.1966 "/>
+        </g>
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="#660000" stroke="#000000" stroke-width="0.006937085141523466" d="M 10.9881 21.5041 L 11.0204 21.5303 L 10.8842 21.6977 L 10.852 21.6715 L 10.9881 21.5041 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.006937085141523466" stroke-linecap="round" d="M 11.0051 21.5144 L 11.0132 21.4852 "/>
+        </g>
+        <g id="ID0.3734469981864095">
+          <path id="ID0.8241717438213527" fill="url(#grad_4-0.6139851808547974,-0.5244435667991638,-0.5244435667991638,0.6139851808547974,58.5,12.3)" stroke="#000000" stroke-width="0.807476846148747" d="M 21.84 8.597 L 18.1561 5.4503 L 1.8459 24.5453 L 5.5298 27.6919 L 21.84 8.597 Z "/>
+          <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.807476846148747" stroke-linecap="round" d="M 20.2999 6.8567 L 23.4722 5.3186 "/>
+        </g>
+      </g>
+      <text id="ID0.9592428067699075" fill="#FFFFFF" text-anchor="start" font-family="Serif" font-size="22" transform="matrix(0.116441 -0.141805 0.141805 0.116441 6.26566 17.8006)" stroke-width="1" alignment-baseline="text-before-edge" xml:space="preserve"><tspan x="0" style="white-space: pre" dy="1.25em">TNT</tspan></text>
+    </g>
+  </g>
+</svg>

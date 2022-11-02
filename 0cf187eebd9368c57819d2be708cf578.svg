@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="5.286018371582031" height="7.274134159088135" viewBox="0.1373000144958496 0.3021664619445801 5.286018371582031 7.274134159088135">
+  <defs>
+    <radialGradient id="grad_1" cx="0.7118000000000001" cy="0.28" r="0.9359999999999999">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </radialGradient>
+  <radialGradient id="grad_1-,0,0,0,2.4,3.8" cx="2.4" cy="3.8" r="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </radialGradient></defs>
+  <!-- Exported by Scratch - http://scratch.mit.edu/ -->
+  <g id="ID0.8305611042305827">
+    <g id="ID0.6423887554556131">
+      <image id="ID0.719466760288924" width="2" height="2" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAADklEQVR42mNhgAIWGAMAAH4ACYwGaSAAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=" transform="matrix(0.0257759690284729,-0.04147857055068016,0.04147857055068016,0.0257759690284729,3.5,3.85)" stroke-width="1"/>
+      <path id="ID0.8567995992489159" fill="#E7B17D" stroke="#995900" stroke-width="0.1953406212454356" d="M 0.6373 6.6639 L 3.782 1.6035 L 4.4457 2.0159 L 1.301 7.0763 L 0.6373 6.6639 Z "/>
+      <path id="ID0.14121821569278836" fill="none" stroke="#FFD4AA" stroke-width="0.1953406212454356" stroke-linecap="round" d="M 0.9814 6.619 L 3.8812 1.9527 "/>
+      <path id="ID0.804306146223098" fill="#FF0000" stroke="#FF0000" stroke-width="0.1953406212454356" d="M 3.9422 1.1256 C 4.0329 0.9797 4.1639 0.8778 4.3023 0.8311 C 4.4406 0.7843 4.5863 0.7928 4.7064 0.8674 C 4.8265 0.9421 4.8987 1.069 4.918 1.2137 C 4.9374 1.3584 4.904 1.521 4.8133 1.6669 C 4.7226 1.8128 4.5917 1.9147 4.4533 1.9615 C 4.315 2.0082 4.1693 1.9998 4.0491 1.9251 C 3.929 1.8505 3.8569 1.7235 3.8376 1.5788 C 3.8182 1.4341 3.8516 1.2715 3.9422 1.1256 Z "/>
+    </g>
+    <g id="ID0.6423887554556131">
+      <image id="ID0.719466760288924" width="2" height="2" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAADklEQVR42mNhgAIWGAMAAH4ACYwGaSAAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=" transform="matrix(0,0,0,0,2.4,3.8)" stroke-width="1"/>
+      <path id="ID0.8567995992489159" fill="#E7B17D" stroke="#000000" stroke-width="0" d="M 2.4 3.8 L 2.4 3.8 L 2.4 3.8 L 2.4 3.8 L 2.4 3.8 Z "/>
+      <path id="ID0.14121821569278836" fill="none" stroke="#FFD4AA" stroke-width="0" stroke-linecap="round" d="M 2.4 3.8 L 2.4 3.8 "/>
+      <path id="ID0.804306146223098" fill="url(#grad_1-,0,0,0,2.4,3.8)" stroke="#000000" stroke-width="0" d="M 2.4 3.8 C 2.4 3.8 2.4 3.8 2.4 3.8 C 2.4 3.8 2.4 3.8 2.4 3.8 C 2.4 3.8 2.4 3.8 2.4 3.8 C 2.4 3.8 2.4 3.8 2.4 3.8 C 2.4 3.8 2.4 3.8 2.4 3.8 C 2.4 3.8 2.4 3.8 2.4 3.8 C 2.4 3.8 2.4 3.8 2.4 3.8 C 2.4 3.8 2.4 3.8 2.4 3.8 Z "/>
+    </g>
+  </g>
+</svg>

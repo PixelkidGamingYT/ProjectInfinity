@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Infinity</title>
+    <script type="text/javascript">
+      window.errors = []
+      if (window.addEventListener) {
+        window.addEventListener(
+          'error',
+          function (e) {
+            if (e.message) {
+              if (e.error && e.error.stack) {
+                if (e.message.indexOf('Uncaught SyntaxError') === 0) {
+                  window.errors.push(
+                    e.message +
+                      ' at ' +
+                      e.filename +
+                      ':' +
+                      e.lineno +
+                      ':' +
+                      e.colno
+                  )
+                } else {
+                  window.errors.push(e.error.stack)
+                }
+                if (window.onNewError) window.onNewError()
+              }
+            } else {
+              window.errors.push(
+                'Problem loading ' + (e.target.src || e.target.href)
+              )
+              if (window.onNewError) window.onNewError()
+            }
+            window.onerror = null
+          },
+          true
+        ) // true so that errors bubble up to window
+        window.addEventListener(
+          'unhandledrejection',
+          function (e) {
+            window.errors.push(
+              e.reason && (e.reason.stack || e.reason.message || e.reason)
+            )
+            if (window.onNewError) window.onNewError()
+          },
+          false
+        )
+      }
+      window.onerror = function (message, source, lineno, colno, error) {
+        if (colno) {
+          lineno += ':' + colno
+        }
+        if (error && error.stack) {
+          window.errors.push(error.stack)
+        } else {
+          window.errors.push(message + ' at ' + source + ':' + lineno)
+        }
+        if (window.onNewError) window.onNewError()
+      }
+    </script>
+    <link rel="shortcut icon" type="image/png" href="./favicon.png"> <style>
+html,
+body {
+  height: 100%;
+}
+body,
+::backdrop {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  font-size: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  background-position: center;
+  background-size: cover;
+}
+#wrapper {
+  display: block;
+  position: relative;
+}
+.no-cursor #wrapper {
+  cursor: none;
+}
+.loading #wrapper {
+  visibility: hidden;
+}
+.stretch-stage #wrapper {
+  width: 100vw;
+  height: 100vh;
+}
+/* CSS for proportional wrapper scaling is added dynamically by htmlifier.ts */
+#monitors {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#stage {
+  width: 100%;
+  height: 100%;
+}
+#loading-progress {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  border-radius: 20px;
+  --progress: 0%;
+  z-index: 100;
+}
+.show-loading-progress #loading-progress {
+  display: block;
+}
+#loading-progress::before {
+  content: attr(data-progress);
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+#loading-progress::after {
+  content: '';
+  display: block;
+  height: 16px;
+  border-radius: 20px;
+  width: var(--progress);
+}
+#loading-image {
+  position: fixed;
+  max-width: 100%;
+  max-height: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+.stretch-loading-image #loading-image {
+  width: 100%;
+  height: 100%;
+}
+.buttons {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-bottom-left-radius: 12px;
+}
+.buttons .button,
+.buttons button {
+  display: none;
+  -webkit-appearance: none;
+  border: none;
+  background: none;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px;
+}
+.buttons button:disabled,
+#add-sprite-file:disabled + #add-sprite-btn {
+  cursor: auto;
+  opacity: 0.5;
+}
+#start-btn {
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"%3E%3Cpath d="M8 5v14l11-7z" fill="%23fff"/%3E%3C/svg%3E%0A');
+}
+.running #start-btn {
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"%3E%3Cpath d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" fill="%23fff"/%3E%3C/svg%3E');
+}
+#stop-btn {
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"%3E%3Cpath d="M6 6h12v12H6z" fill="%23fff"/%3E%3C/svg%3E%0A');
+}
+#fullscreen-btn {
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"%3E%3Cpath d="M14 28h-4v10h10v-4h-6v-6zm-4-8h4v-6h6v-4H10v10zm24 14h-6v4h10V28h-4v6zm-6-24v4h6v6h4V10H28z" fill="%23fff"/%3E%3C/svg%3E');
+}
+.fullscreen #fullscreen-btn {
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"%3E%3Cpath d="M10 32h6v6h4V28H10v4zm6-16h-6v4h10V10h-4v6zm12 22h4v-6h6v-4H28v10zm4-22v-6h-4v10h10v-4h-6z" fill="%23fff"/%3E%3C/svg%3E');
+}
+#download-btn {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M5,20h14v-2H5V20z M19,9h-4V3H9v6H5l7,7L19,9z'/%3E%3C/svg%3E");
+}
+#add-sprite-btn {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z'/%3E%3C/svg%3E");
+}
+#add-sprite-file {
+  display: none;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+.show-start-stop-btns #start-btn,
+.show-start-stop-btns #stop-btn,
+.show-fullscreen-btn #fullscreen-btn,
+.show-download-btn #download-btn,
+.show-add-sprite-btn #add-sprite-btn,
+.show-add-sprite-btn #add-sprite-file {
+  display: inline-block;
+}
+.monitor {
+  position: absolute;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  overflow: hidden;
+  padding: 3px;
+  white-space: pre;
+}
+.show-monitor-box .monitor {
+  border-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.monitor-label {
+  margin: 0 5px;
+  font-weight: bold;
+}
+.monitor-value {
+  display: inline-block;
+  vertical-align: top;
+  min-width: 34px;
+  text-align: center;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: text;
+  transform: translateZ(0);
+}
+.default .monitor-value,
+.slider .monitor-value {
+  margin: 0 5px;
+  padding: 1px 3px;
+}
+.show-monitor-box .default .monitor-value,
+.show-monitor-box .slider .monitor-value {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.large {
+  padding: 0.1rem 0.25rem;
+  min-width: 3rem;
+}
+.show-monitor-box .large {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+.large .monitor-label {
+  display: none;
+}
+.large .monitor-value {
+  font-size: 1rem;
+  width: 100%;
+}
+.list {
+  padding: 0;
+  overflow: auto;
+  overflow-x: hidden;
+}
+.list .monitor-label {
+  text-align: center;
+  padding: 3px;
+  width: 100%;
+  display: block;
+  margin: 0;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+}
+.list .monitor-value {
+  display: block;
+}
+.row {
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  height: 24px;
+  box-sizing: border-box;
+  transform: translateZ(0);
+}
+.index {
+  font-weight: bold;
+  margin: 0 3px;
+  flex: none;
+}
+.row-value {
+  flex: auto;
+  margin: 0 3px;
+  text-align: left;
+  border-radius: 0.25rem;
+  border: 1px solid transparent;
+  height: 22px;
+  padding: 3px 5px;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.show-monitor-box .row-value {
+  border-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.slider input {
+  display: block;
+  width: 100%;
+  transform: translateZ(0);
+}
+#asking-box {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(33, 33, 33, 0.7);
+}
+.asking #asking-box {
+  display: block;
+}
+#question {
+  display: block;
+  margin: 0 10px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: white;
+}
+#answer {
+  border: none;
+  background: none;
+  width: 100%;
+  font: inherit;
+  font-size: 16px;
+  color: white;
+  padding: 10px;
+  box-sizing: border-box;
+}
+#answer:focus {
+  outline: none;
+}
+#errors {
+  -webkit-appearance: none;
+  border: none;
+  background: rgba(255, 0, 0, 0.7);
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: none;
+}
+
+</style> <style>
+#wrapper { width: 100vw; height: 56.25vw; }
+@media (min-aspect-ratio: 640/360) {
+#wrapper { height: 100vh; width: 177.77777777777777vh; }
+}
+.monitor {
+color: #ffffff;
+}
+</style>
+  </head>
+  <body class="loading show-monitor-box">
+    <div id="wrapper">
+      <canvas id="stage"></canvas>
+      <div id="monitors"></div>
+      <div id="asking-box">
+        <label id="question" for="answer">Question</label>
+        <input type="text" id="answer" />
+      </div>
+    </div>
+    <div id="loading-progress" data-progress="0%"></div>
+     
+    <div class="buttons">
+      <!--
+        Only support sprite files (no images) for now. See
+        https://github.com/SheepTester/htmlifier/issues/67#issuecomment-894746718
+      -->
+      <input
+        type="file"
+        id="add-sprite-file"
+        accept=".sprite2, .sprite3"
+        aria-label="Select a Scratch sprite to add"
+        multiple
+      />
+      <label
+        class="button"
+        id="add-sprite-btn"
+        for="add-sprite-file"
+        title="Add Scratch sprite to project"
+      ></label>
+      <button id="download-btn" aria-label="Download Scratch project"></button>
+      <button id="start-btn" aria-label="Start"></button>
+      <button id="stop-btn" aria-label="Stop" disabled></button>
+      <button id="fullscreen-btn" aria-label="Enter/exit fullscreen"></button>
+    </div>
+    <textarea id="errors" readonly></textarea>
+    <script src="./vm.js"></script> <script>
+const noop = () => null
+
+window.Scratch = {
+  get vm () {
+    return window.vm
+  },
+  get renderer () {
+    return window.vm.runtime.renderer
+  },
+  get audioEngine () {
+    return window.vm.runtime.audioEngine
+  },
+  get bitmapAdapter () {
+    return window.vm.runtime.v2BitmapAdapter
+  },
+  get videoProvider () {
+    return window.vm.runtime.ioDevices.video.provider
+  }
+}
+
+const CLOUD_PREFIX = '\u2601 '
+window.setCloud = (name, value) => {
+  vm.postIOData('cloud', {
+    varUpdate: {
+      name: CLOUD_PREFIX + name,
+      value
+    }
+  })
+}
+function postError (err) {
+  setCloud('eval error', err.toString())
+}
+
+class CloudProvider {
+  constructor (options) {
+    this._serverUrl = options.cloud.serverUrl
+    this._specialBehaviours = options.cloud.specialBehaviours
+    this._options = options
+
+    this._ws = null
+
+    this.createVariable = noop
+    this.renameVariable = noop
+    this.deleteVariable = noop
+
+    this._handleMessage = event => {
+      event.data.split('\n').forEach(message => {
+        if (message) {
+          const { name, value } = JSON.parse(message)
+          vm.postIOData('cloud', {
+            varUpdate: { name, value }
+          })
+        }
+      })
+    }
+    this._handleOpen = () => {
+      this._sendData({ method: 'handshake' })
+    }
+    this._handleClose = () => {
+      setTimeout(() => this._openConnection(), 500)
+    }
+
+    this.handleUrlChange = () => {
+      setCloud('url', window.location.href)
+    }
+    if (this._specialBehaviours) {
+      window.addEventListener('hashchange', this.handleUrlChange)
+      window.addEventListener('popstate', this.handleUrlChange)
+      // Paste output
+      window.addEventListener('paste', event => {
+        setCloud(
+          'pasted',
+          (event.clipboardData || window.clipboardData).getData('text')
+        )
+      })
+    }
+
+    if (this._serverUrl) {
+      this._openConnection()
+    }
+  }
+
+  _openConnection () {
+    try {
+      this._ws = new WebSocket(this._serverUrl)
+    } catch (error) {
+      console.warn(error)
+      return
+    }
+    this._ws.onmessage = this._handleMessage
+    this._ws.onopen = this._handleOpen
+    this._ws.onclose = this._handleClose
+  }
+
+  _sendData (data) {
+    data.user = this._options.username
+    data.project_id = this._options.cloud.projectId
+    this._ws.send(JSON.stringify(data) + '\n')
+  }
+
+  updateVariable (name, value) {
+    if (this._specialBehaviours) {
+      let matched = true
+      if (name === CLOUD_PREFIX + 'eval') {
+        try {
+          Promise.resolve(eval(value))
+            .then(output => {
+              setCloud('eval output', output)
+            })
+            .catch(postError)
+        } catch (error) {
+          postError(error)
+        }
+      } else if (name === CLOUD_PREFIX + 'open link') {
+        try {
+          window.open(value, '_blank')
+        } catch (error) {
+          postError(error)
+        }
+      } else if (name === CLOUD_PREFIX + 'redirect') {
+        window.location = value
+      } else if (name === CLOUD_PREFIX + 'set clipboard') {
+        try {
+          navigator.clipboard.writeText(value).catch(postError)
+        } catch (error) {
+          postError(error)
+        }
+      } else if (name === CLOUD_PREFIX + 'set server ip') {
+        this._cloudHost = value
+        if (this._ws) {
+          this._ws.onclose = noop
+          this._ws.close()
+        }
+        this._openConnection()
+      } else if (name === CLOUD_PREFIX + 'username') {
+        this._options.username = value
+        vm.postIOData('userData', { username: value })
+      } else {
+        matched = false
+      }
+      if (matched) {
+        return
+      }
+    }
+    if (
+      !this._serverUrl ||
+      (this._specialBehaviours &&
+        name.startsWith(CLOUD_PREFIX + 'local storage'))
+    ) {
+      try {
+        localStorage.setItem('[s3] ' + name, value)
+      } catch (error) {
+        postError(error)
+      }
+    } else {
+      this._sendData({ method: 'set', name, value })
+    }
+  }
+
+  requestCloseConnection () {
+    if (
+      this._ws &&
+      this._ws.readyState !== WebSocket.CLOSING &&
+      this._ws.readyState !== WebSocket.CLOSED
+    ) {
+      this._ws.onclose = noop
+      this._ws.close()
+    }
+  }
+}
+
+// Based on
+// https://github.com/LLK/scratch-gui/blob/7b658c60c7c04055e575601a861195fe6c9933f3/src/lib/video/camera.js
+// https://github.com/LLK/scratch-gui/blob/7b658c60c7c04055e575601a861195fe6c9933f3/src/lib/video/video-provider.js
+class VideoProvider {
+  constructor (width, height) {
+    this._dimensions = [width, height]
+    this.mirror = true
+    this._frameCacheTimeout = 16
+    this._video = null
+    this._track = null
+    this._workspace = []
+  }
+
+  get video () {
+    return this._video
+  }
+
+  enableVideo () {
+    this.enabled = true
+    return this._setupVideo()
+  }
+
+  disableVideo () {
+    this.enabled = false
+    if (this._singleSetup) {
+      this._singleSetup
+        .then(this._teardown.bind(this))
+        .catch(err => this.onError(err))
+    }
+  }
+
+  _teardown () {
+    if (this.enabled === false) {
+      requestStack.pop()
+      const disableTrack = requestStack.length === 0
+      this._singleSetup = null
+      this._video = null
+      if (this._track && disableTrack) {
+        this._track.stop()
+      }
+      this._track = null
+    }
+  }
+
+  getFrame ({
+    dimensions = this._dimensions,
+    mirror = this.mirror,
+    format = 'image-data',
+    cacheTimeout = this._frameCacheTimeout
+  }) {
+    if (!this.videoReady) {
+      return null
+    }
+    const [width, height] = dimensions
+    const workspace = this._getWorkspace({
+      dimensions,
+      mirror: Boolean(mirror)
+    })
+    const { videoWidth, videoHeight } = this._video
+    const { canvas, context, lastUpdate, cacheData } = workspace
+    const now = Date.now()
+
+    if (lastUpdate + cacheTimeout < now) {
+      if (mirror) {
+        context.scale(-1, 1)
+        context.translate(width * -1, 0)
+      }
+
+      context.drawImage(
+        this._video,
+        0,
+        0,
+        videoWidth,
+        videoHeight,
+        0,
+        0,
+        width,
+        height
+      )
+
+      context.setTransform(1, 0, 0, 1, 0, 0)
+      workspace.lastUpdate = now
+    }
+
+    if (!cacheData[format]) {
+      cacheData[format] = { lastUpdate: 0 }
+    }
+    const formatCache = cacheData[format]
+
+    if (formatCache.lastUpdate + cacheTimeout < now) {
+      if (format === 'image-data') {
+        formatCache.lastData = context.getImageData(0, 0, width, height)
+      } else if (format === 'canvas') {
+        formatCache.lastUpdate = Infinity
+        formatCache.lastData = canvas
+      } else {
+        console.error(`video io error - unimplemented format ${format}`)
+        formatCache.lastUpdate = Infinity
+        formatCache.lastData = null
+      }
+
+      formatCache.lastUpdate = Math.max(
+        workspace.lastUpdate,
+        formatCache.lastUpdate
+      )
+    }
+
+    return formatCache.lastData
+  }
+
+  onError (error) {
+    console.error('Unhandled video io device error', error)
+  }
+
+  _setupVideo () {
+    if (this._singleSetup) {
+      return this._singleSetup
+    }
+
+    if (requestStack.length === 0) {
+      this._singleSetup = navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          width: { min: width, ideal: (480 * width) / height },
+          height: { min: height, ideal: 480 }
+        }
+      })
+      requestStack.push(streamPromise)
+    } else if (requestStack.length > 0) {
+      this._singleSetup = requestStack[0]
+      requestStack.push(true)
+    }
+    this._singleSetup
+      .then(stream => {
+        this._video = document.createElement('video')
+
+        try {
+          this._video.srcObject = stream
+        } catch (_error) {
+          this._video.src = window.URL.createObjectURL(stream)
+        }
+        this._video.play()
+        this._track = stream.getTracks()[0]
+        return this
+      })
+      .catch(error => {
+        this._singleSetup = null
+        this.onError(error)
+      })
+
+    return this._singleSetup
+  }
+
+  get videoReady () {
+    if (!this.enabled || !this._video || !this._track) {
+      return false
+    }
+    const { videoWidth, videoHeight } = this._video
+    return (
+      typeof videoWidth === 'number' &&
+      typeof videoHeight === 'number' &&
+      videoWidth > 0 &&
+      videoHeight > 0
+    )
+  }
+
+  _getWorkspace ({ dimensions, mirror }) {
+    let workspace = this._workspace.find(
+      space =>
+        space.dimensions.join('-') === dimensions.join('-') &&
+        space.mirror === mirror
+    )
+    if (!workspace) {
+      workspace = {
+        dimensions,
+        mirror,
+        canvas: document.createElement('canvas'),
+        lastUpdate: 0,
+        cacheData: {}
+      }
+      workspace.canvas.width = dimensions[0]
+      workspace.canvas.height = dimensions[1]
+      workspace.context = workspace.canvas.getContext('2d')
+      this._workspace.push(workspace)
+    }
+    return workspace
+  }
+}
+
+const fullscreenBtn = document.getElementById('fullscreen-btn')
+const exitFullscreen =
+  document.exitFullscreen ||
+  document.msExitFullscreen ||
+  document.mozCancelFullScreen ||
+  document.webkitExitFullscreen
+const requestFullscreen =
+  document.body.requestFullscreen ||
+  document.body.msRequestFullscreen ||
+  document.body.mozRequestFullScreen ||
+  document.body.webkitRequestFullscreen
+function isFullscreen () {
+  return (
+    document.fullscreenElement ||
+    document.mozFullScreenElement ||
+    document.webkitFullscreenElement ||
+    document.msFullscreenElement
+  )
+}
+function toggleFullscreen () {
+  if (isFullscreen()) {
+    exitFullscreen.call(document)
+  } else {
+    requestFullscreen.call(document.body)
+  }
+}
+fullscreenBtn.addEventListener('click', () => {
+  fullscreenBtn.blur()
+  toggleFullscreen()
+})
+function handleFullscreenChange () {
+  if (isFullscreen()) {
+    document.body.classList.add('fullscreen')
+  } else {
+    document.body.classList.remove('fullscreen')
+  }
+}
+document.addEventListener('fullscreenchange', handleFullscreenChange)
+document.addEventListener('mozfullscreenchange', handleFullscreenChange)
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
+document.addEventListener('msfullscreenchange', handleFullscreenChange)
+
+window.init = async ({ width, height, ...options }) => {
+  window.vm = new window.NotVirtualMachine(width, height)
+  vm.setCompatibilityMode(options.fps)
+  vm.setTurboMode(options.turbo)
+  vm.requireLimits(options.limits, { fencing: options.fencing })
+
+  const storage = new ScratchStorage()
+  const AssetType = storage.AssetType
+  if (options.assets.project) {
+    storage.addWebStore([AssetType.Project], () => options.assets.project)
+    storage.addWebStore(
+      [AssetType.ImageVector, AssetType.ImageBitmap, AssetType.Sound],
+      ({ assetId, dataFormat }) => options.assets[`${assetId}.${dataFormat}`]
+    )
+  }
+  const progress = document.getElementById('loading-progress')
+  if (options.loadingProgress) {
+    const _load = storage.webHelper.load
+    let total = 0,
+      complete = 0
+    storage.webHelper.load = function (...args) {
+      const result = _load.call(this, ...args)
+      total += 1
+      const percentage = (complete / total) * 100
+      progress.dataset.progress = percentage.toFixed(2) + '%'
+      progress.style.setProperty('--progress', percentage + '%')
+      result.then(() => {
+        complete += 1
+        const percentage = (complete / total) * 100
+        progress.dataset.progress = percentage.toFixed(2) + '%'
+        progress.style.setProperty('--progress', percentage + '%')
+      })
+      return result
+    }
+  }
+  vm.attachStorage(storage)
+
+  function resize () {
+    const rect = canvas.getBoundingClientRect()
+    renderer.resize(rect.width, rect.height)
+    if (options.stretchStage) {
+      monitorWrapper.style.transform = `scaleX(${rect.width /
+        width}) scaleY(${rect.height / height})`
+    } else {
+      monitorWrapper.style.transform = `scale(${rect.height / height})`
+    }
+  }
+  const monitorWrapper = document.getElementById('monitors')
+  const canvas = document.getElementById('stage')
+  const renderer = new window.ScratchRender(
+    canvas,
+    -width / 2,
+    width / 2,
+    -height / 2,
+    height / 2
+  )
+  resize()
+  vm.attachRenderer(renderer)
+
+  vm.attachAudioEngine(new window.AudioEngine())
+  vm.attachV2BitmapAdapter(
+    new ScratchSVGRenderer.BitmapAdapter(null, null, width, height)
+  )
+  vm.setVideoProvider(new VideoProvider(width, height))
+  vm.start()
+
+  if (options.extensionCount > 0) {
+    const OldWorker = window.Worker
+    window.Worker = class extends OldWorker {
+      // deno-lint-ignore constructor-super
+      constructor (...args) {
+        if (args[0].endsWith('extension-worker.js')) {
+          if (options.extensionWorker.url) {
+            super(options.extensionWorker.url, ...args.slice(1))
+          } else {
+            super(
+              URL.createObjectURL(
+                new Blob([options.extensionWorker.script], {
+                  type: 'text/javascript'
+                })
+              ),
+              ...args.slice(1)
+            )
+          }
+        } else {
+          super(...args)
+        }
+      }
+    }
+  }
+
+  /* https://github.com/LLK/scratch-gui/blob/develop/src/containers/stage.jsx#L176-L300 */
+  const getEventXY = e => {
+    if (e.touches && e.touches[0]) {
+      return { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    } else if (e.changedTouches && e.changedTouches[0]) {
+      return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY }
+    }
+    return { x: e.clientX, y: e.clientY }
+  }
+  let mouseDown = false
+  let mouseDownPosition = null
+  let mouseDownTimeoutId = null
+  let isDragging = false
+  let dragId = null
+  let dragOffset = null
+  function cancelMouseDownTimeout () {
+    if (mouseDownTimeoutId !== null) {
+      clearTimeout(mouseDownTimeoutId)
+    }
+    mouseDownTimeoutId = null
+  }
+  // https://github.com/LLK/scratch-gui/blob/develop/src/containers/stage.jsx#L337-L366
+  function handleStartDrag () {
+    if (dragId || !mouseDownPosition) return
+    const drawableId = renderer.pick(mouseDownPosition.x, mouseDownPosition.y)
+    if (drawableId === null) return
+    const targetId = vm.getTargetIdForDrawableId(drawableId)
+    if (targetId === null) return
+    const target = vm.runtime.getTargetById(targetId)
+    if (!target || !target.draggable) return
+    target.goToFront()
+    const drawableData = renderer.extractDrawable(
+      drawableId,
+      mouseDownPosition.x,
+      mouseDownPosition.y
+    )
+    vm.startDrag(targetId)
+    isDragging = true
+    dragId = targetId
+    dragOffset = drawableData.scratchOffset
+  }
+  const accumulative = { x: 0, y: 0 }
+  function postIfPointerLocked (e, isDown) {
+    if (
+      document.pointerLockElement === canvas ||
+      document.mozPointerLockElement === canvas
+    ) {
+      accumulative.x += e.movementX
+      accumulative.y += e.movementY
+      vm.postIOData('mouse', {
+        isDown,
+        x: accumulative.x + width / 2,
+        y: accumulative.y + height / 2,
+        canvasWidth: width,
+        canvasHeight: height
+      })
+      return true
+    } else {
+      return false
+    }
+  }
+  function postMouse (event, isDown) {
+    const { x, y } = getEventXY(event)
+    const rect = canvas.getBoundingClientRect()
+    const mousePosition = { x: x - rect.left, y: y - rect.top }
+    vm.postIOData('mouse', {
+      isDown,
+      ...mousePosition,
+      canvasWidth: rect.width,
+      canvasHeight: rect.height
+    })
+    return { mousePosition, rect }
+  }
+  function handleMouseMove (event) {
+    if (postIfPointerLocked(event)) return
+    const { mousePosition, rect } = postMouse(event)
+    if (mouseDown && !isDragging) {
+      const distanceFromMouseDown = Math.hypot(
+        mousePosition.x - mouseDownPosition.x,
+        mousePosition.y - mouseDownPosition.y
+      )
+      if (distanceFromMouseDown > 3) {
+        cancelMouseDownTimeout()
+        handleStartDrag()
+      }
+    }
+    if (mouseDown && isDragging) {
+      const nativeSize = renderer.getNativeSize()
+      vm.postSpriteInfo({
+        x:
+          (nativeSize[0] / rect.width) * (mousePosition.x - rect.width / 2) +
+          dragOffset[0],
+        y: -(
+          (nativeSize[1] / rect.height) * (mousePosition.y - rect.height / 2) +
+          dragOffset[1]
+        ),
+        force: true
+      })
+    }
+  }
+  function handleMouseDown (event) {
+    mouseDown = true
+    vm.postIOData('keyboard', {
+      key: 'Mouse' + event.which,
+      isDown: true
+    })
+    if (postIfPointerLocked(event, true)) return
+    mouseDownPosition = postMouse(event, true).mousePosition
+    mouseDownTimeoutId = setTimeout(handleStartDrag, 400)
+    event.preventDefault()
+    if (!document.body.classList.contains('asking')) {
+      window.focus()
+    }
+  }
+  function handleMouseUp (event) {
+    cancelMouseDownTimeout()
+    mouseDown = false
+    mouseDownPosition = null
+    if (isDragging) {
+      vm.stopDrag(dragId)
+      isDragging = false
+      dragOffset = null
+      dragId = null
+    }
+    vm.postIOData('keyboard', {
+      key: 'Mouse' + event.which,
+      isDown: false
+    })
+    if (postIfPointerLocked(event, false)) return
+    postMouse(event, false)
+  }
+  document.addEventListener('mousemove', handleMouseMove)
+  document.addEventListener('mouseup', handleMouseUp)
+  document.addEventListener('touchmove', handleMouseMove)
+  document.addEventListener('touchend', handleMouseUp, { passive: false })
+  canvas.addEventListener('wheel', event => {
+    vm.postIOData('mouseWheel', event)
+    event.preventDefault()
+  })
+  window.addEventListener('resize', resize)
+  canvas.addEventListener('contextmenu', event => {
+    event.preventDefault()
+  })
+  if (options.pointerLock) {
+    canvas.requestPointerLock =
+      canvas.requestPointerLock || canvas.mozRequestPointerLock
+    canvas.addEventListener('click', () => {
+      canvas.requestPointerLock()
+    })
+  }
+
+  /**
+   * Maps e.key to e.code. For example, Shift -> ShiftRight. This is because the
+   * keyup event doesn't fire when you let go of one shift if the other shift
+   * key is still held down.
+   */
+  const keyToCode = new Map()
+  function postKey (event, isDown) {
+    const key = !event.key || event.key === 'Dead' ? event.keyCode : event.key
+    vm.postIOData('keyboard', {
+      key: key,
+      isDown
+    })
+    vm.postIOData('keyboard', {
+      key: 'code_' + event.code,
+      isDown
+    })
+  }
+  document.addEventListener('keydown', event => {
+    if (event.target !== document && event.target !== document.body) return
+    const prevCode = keyToCode.get(event.key)
+    if (prevCode) {
+      if (prevCode !== event.code) {
+        vm.postIOData('keyboard', {
+          key: 'code_' + prevCode,
+          isDown: false
+        })
+      }
+    }
+    postKey(event, true)
+    keyToCode.set(event.key, event.code)
+    if (event.keyCode === 32 || (event.keyCode >= 37 && event.keyCode <= 40)) {
+      event.preventDefault()
+    }
+    if (
+      event.key === 'f' &&
+      (event.ctrlKey || event.metaKey) &&
+      !event.shiftKey &&
+      !event.altKey
+    ) {
+      toggleFullscreen()
+      event.preventDefault()
+    }
+  })
+  document.addEventListener('keyup', e => {
+    postKey(e, false)
+    keyToCode.delete(e.key)
+    if (e.target !== document && e.target !== document.body) {
+      e.preventDefault()
+    }
+  })
+  vm.postIOData('keyboard', {
+    key: 'HTMLifier',
+    isDown: true
+  })
+
+  const question = document.getElementById('question')
+  const askBox = document.getElementById('answer')
+  vm.runtime.addListener('QUESTION', questionData => {
+    // null means the question was interrupted by stop script block
+    if (questionData === null) {
+      document.body.classList.remove('asking')
+    } else {
+      document.body.classList.add('asking')
+      question.textContent = questionData
+      askBox.value = ''
+      askBox.focus()
+    }
+  })
+  askBox.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      // The asking class must be removed first because the VM may start the
+      // next question immediately inside the .emit call
+      document.body.classList.remove('asking')
+      vm.runtime.emit('ANSWER', askBox.value)
+    }
+  })
+
+  const getVariable = (targetId, variableId) => {
+    const target = targetId
+      ? vm.runtime.getTargetById(targetId)
+      : vm.runtime.getTargetForStage()
+    return target.variables[variableId]
+  }
+  const monitorStates = {}
+  vm.runtime.addListener('MONITORS_UPDATE', monitors => {
+    monitors.forEach((record, id) => {
+      const {
+        value,
+        visible,
+        mode,
+        x,
+        y,
+        width,
+        height,
+        params,
+        opcode,
+        spriteName,
+        sliderMin,
+        sliderMax,
+        isDiscrete,
+        targetId
+      } = record
+
+      if (!monitorStates[id]) {
+        const label = document.createElement('span')
+        label.className = 'monitor-label'
+        const name = params.VARIABLE || params.LIST || opcode
+        label.textContent = spriteName ? `${spriteName}: ${name}` : name
+
+        const value = document.createElement('span')
+        value.className = 'monitor-value'
+
+        const monitor = document.createElement('div')
+        monitor.className = 'monitor ' + mode
+        monitor.style.left = x + 'px'
+        monitor.style.top = y + 'px'
+        monitor.append(label, value)
+
+        monitorStates[id] = { monitor, valueElem: value, wasVisible: true }
+
+        if (mode === 'slider') {
+          const slider = document.createElement('input')
+          slider.type = 'range'
+          slider.min = sliderMin
+          slider.max = sliderMax
+          slider.step = isDiscrete ? 1 : 0.01
+          // Prevent tab focus, per #54, but it deviates from Scratch
+          slider.tabIndex = -1
+          slider.addEventListener('input', () => {
+            getVariable(targetId, id).value = slider.value
+          })
+          slider.addEventListener('change', () => {
+            getVariable(targetId, id).value = slider.value
+          })
+          monitorStates[id].slider = slider
+          monitor.append(slider)
+        } else if (mode === 'list') {
+          // If the list has never been resized, the width/height will be 0.
+          // Weird!
+          monitor.style.width = (width || 100) + 'px'
+          monitor.style.height = (height || 200) + 'px'
+
+          monitorStates[id].rowElems = []
+        }
+
+        monitorWrapper.append(monitor)
+      }
+
+      const {
+        monitor,
+        valueElem,
+        wasVisible,
+        lastValue = [],
+        slider,
+        rowElems
+      } = monitorStates[id]
+      if (visible) {
+        if (!wasVisible) {
+          monitor.style.display = null
+        }
+        const differed = Array.isArray(value)
+          ? JSON.stringify(lastValue) !== JSON.stringify(value)
+          : lastValue !== value
+        if (differed) {
+          if (Array.isArray(value)) {
+            if (lastValue.length !== rowElems.length) {
+              console.error(
+                "List monitor rowElems and lastValue lengths don't match."
+              )
+            }
+
+            value.forEach((val, i) => {
+              if (i >= lastValue.length) {
+                // Could also set width to (lastValue.length + '').length + 'ch'
+                const index = document.createElement('div')
+                index.className = 'index'
+                index.textContent = i + 1
+
+                const value = document.createElement('div')
+                value.className = 'row-value'
+
+                const row = document.createElement('div')
+                row.className = 'row'
+                row.append(index, value)
+
+                valueElem.append(row)
+                rowElems[i] = value
+              }
+
+              if (lastValue[i] !== val) {
+                rowElems[i].textContent = val
+              }
+            })
+
+            if (value.length < lastValue.length) {
+              for (const toRemove of rowElems.splice(
+                value.length,
+                lastValue.length - value.length
+              )) {
+                toRemove.parentNode.remove()
+              }
+            }
+          } else {
+            // The HTMLifier used to use Number(value.toFixed(6)) but I don't
+            // think Scratch does that for monitors
+            valueElem.textContent = value
+            if (slider) {
+              slider.value = value
+            }
+          }
+        }
+      } else if (wasVisible) {
+        monitor.style.display = 'none'
+      }
+      monitorStates[id].wasVisible = visible
+      // `value` is a live array
+      monitorStates[id].lastValue = Array.isArray(value) ? [...value] : value
+    })
+  })
+
+  vm.postIOData('userData', { username: options.username })
+
+  for (let i = 0; i < options.extensionCount; i++) {
+    await vm.extensionManager.loadExtensionURL(String(i))
+  }
+
+  await vm.loadProject(
+    options.assets.file
+      ? await fetch(options.assets.file).then(r => r.arrayBuffer())
+      : typeof options.assets.project === 'string'
+      ? await storage.load(storage.AssetType.Project).then(asset => asset.data)
+      : // project.json was included as parsed JSON
+        JSON.stringify(options.assets.project)
+  )
+
+  const cloudProvider = new CloudProvider(options)
+  vm.setCloudProvider(cloudProvider)
+  if (options.cloud.specialBehaviours || !options.cloud.serverUrl) {
+    const stageVariables = vm.runtime.getTargetForStage().variables
+    for (const { name, isCloud } of Object.values(stageVariables)) {
+      if (isCloud) {
+        if (
+          options.cloud.specialBehaviours &&
+          options.cloud.serverUrl &&
+          !name.startsWith(CLOUD_PREFIX + 'local storage')
+        ) {
+          continue
+        }
+        const value = localStorage.getItem('[s3] ' + name)
+        if (value !== null) {
+          vm.postIOData('cloud', { varUpdate: { name, value } })
+        }
+      }
+    }
+  }
+  if (options.cloud.specialBehaviours) {
+    cloudProvider.handleUrlChange()
+  }
+
+  progress.remove()
+  const loadingImage = document.getElementById('loading-image')
+  if (loadingImage) {
+    loadingImage.remove()
+  }
+  document.body.classList.remove('loading')
+
+  const greenFlag = document.getElementById('start-btn')
+  const stopSign = document.getElementById('stop-btn')
+  greenFlag.addEventListener('click', () => {
+    greenFlag.blur()
+    vm.greenFlag()
+  })
+  stopSign.addEventListener('click', () => {
+    stopSign.blur()
+    vm.stopAll()
+  })
+  vm.on('PROJECT_RUN_START', () => {
+    document.body.classList.add('running')
+    stopSign.disabled = false
+  })
+  vm.on('PROJECT_RUN_STOP', () => {
+    document.body.classList.remove('running')
+    stopSign.disabled = true
+  })
+  if (options.autoStart) {
+    vm.greenFlag()
+  }
+
+  document
+    .getElementById('download-btn')
+    .addEventListener('click', async () => {
+      download(await vm.saveProjectSb3(), document.title + '.sb3')
+    })
+  const addSpriteInput = document.getElementById('add-sprite-file')
+  addSpriteInput.addEventListener('change', async () => {
+    addSpriteInput.disabled = true
+    for (const file of addSpriteInput.files) {
+      // 1. Convert the File to an arrayBuffer. I care less about browser
+      // support, so I can use async/await + .arrayBuffer
+      // https://github.com/LLK/scratch-gui/blob/develop/src/lib/file-uploader.js#L25
+      const sprite = new Uint8Array(await file.arrayBuffer())
+
+      // 2. Convert a costume to a sprite (skipping for now)
+      // https://github.com/LLK/scratch-gui/blob/develop/src/lib/file-uploader.js#L208
+
+      // 3. Add to VM
+      await vm.addSprite(sprite)
+    }
+    addSpriteInput.disabled = false
+    addSpriteInput.value = null
+  })
+
+  canvas.addEventListener('mousedown', handleMouseDown)
+  canvas.addEventListener('touchstart', handleMouseDown, { passive: false })
+}
+
+const errorsTextarea = document.getElementById('errors')
+function handleHashChange () {
+  // #show-errors-<Han sheep>
+  if (window.location.hash === '#show-errors-%E7%BE%8A') {
+    if (!window.onNewError) {
+      window.onNewError = () => {
+        errorsTextarea.value = `${
+          window.errors.length
+        } error(s)\n${window.errors.join('\n')}`
+      }
+      window.onNewError()
+    }
+    errorsTextarea.style.display = 'block'
+  } else if (window.onNewError) {
+    window.onNewError = null
+    errorsTextarea.style.display = 'none'
+  }
+}
+window.addEventListener('hashchange', handleHashChange)
+handleHashChange()
+
+// Not used by the template, but might be convenient for un-HTMLifying if I
+// remember this function exists
+window.download = (blob, name = 'download') => {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = name
+  document.body.append(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}
+
+</script> <script>
+const GENERATED = 1646789037960
+const initOptions = {
+	"width": 640,
+	"height": 360,
+	"stretchStage": false,
+	"fps": 30,
+	"turbo": false,
+	"limits": false,
+	"fencing": false,
+	"pointerLock": false,
+	"autoStart": true,
+	"username": "ScratchCat",
+	"loadingProgress": false,
+	"cloud": {
+		"serverUrl": null,
+		"specialBehaviours": true,
+		"projectId": "276660763"
+	},
+	"extensionWorker": {
+		"url": "https://sheeptester.github.io/scratch-vm/16-9/extension-worker.js"
+	},
+	"extensionCount": 0,
+	"assets": {
+		"project": "./97.json",
+		"391d6846e8e42f542744f68c7dfb76b3.svg": "./391d6846e8e42f542744f68c7dfb76b3.svg",
+		"71a6f83db09c3a35bb314b598435602c.svg": "./71a6f83db09c3a35bb314b598435602c.svg",
+		"8c0285c674dd9094d1f44f92277bbdf7.svg": "./8c0285c674dd9094d1f44f92277bbdf7.svg",
+		"5aef8c376c443ee870637bc425125c7e.mp3": "./5aef8c376c443ee870637bc425125c7e.mp3",
+		"53352068fadc072da569934169281fe4.wav": "./53352068fadc072da569934169281fe4.wav",
+		"85765f4f63cc0fec222b0c573b6cc75e.svg": "./85765f4f63cc0fec222b0c573b6cc75e.svg",
+		"5fe8ae455a6c2f75abce290802fb8c6e.svg": "./5fe8ae455a6c2f75abce290802fb8c6e.svg",
+		"e505e1b4b13868718f1b0f3790bb3418.wav": "./e505e1b4b13868718f1b0f3790bb3418.wav",
+		"58874d3e93a9c9acaf3bb674c8066547.wav": "./58874d3e93a9c9acaf3bb674c8066547.wav",
+		"4b212d330b693c6d2267fdbe076896d7.wav": "./4b212d330b693c6d2267fdbe076896d7.wav",
+		"78f53052f182cceefe25bcec10033ac9.wav": "./78f53052f182cceefe25bcec10033ac9.wav",
+		"689bdc2fa3a14acb88b210fa666bdba0.wav": "./689bdc2fa3a14acb88b210fa666bdba0.wav",
+		"d9cae58a69b799e235d79933d07d5d35.svg": "./d9cae58a69b799e235d79933d07d5d35.svg",
+		"198641eeaced25e311397f4dcfd51d4c.svg": "./198641eeaced25e311397f4dcfd51d4c.svg",
+		"1c0db8cd09b500895801cb7fde496ef5.svg": "./1c0db8cd09b500895801cb7fde496ef5.svg",
+		"b17c06c37bdc68184a8858e679c0f988.svg": "./b17c06c37bdc68184a8858e679c0f988.svg",
+		"e4bb5ba5a0f7b1e518848ed207480b5a.svg": "./e4bb5ba5a0f7b1e518848ed207480b5a.svg",
+		"b2e9b0305b128412dbaab60124bde329.svg": "./b2e9b0305b128412dbaab60124bde329.svg",
+		"98b54d006554b1612205a55dbb1afedc.svg": "./98b54d006554b1612205a55dbb1afedc.svg",
+		"aff5cc4ad53cb5fa2955c3629e48d0ee.png": "./aff5cc4ad53cb5fa2955c3629e48d0ee.png",
+		"e0582f9b1ac426da3c807a05d174c6bb.svg": "./e0582f9b1ac426da3c807a05d174c6bb.svg",
+		"ac24a0a90997c666c3cd829de095b1bb.svg": "./ac24a0a90997c666c3cd829de095b1bb.svg",
+		"803cce303190ea9c877481b7472bf445.svg": "./803cce303190ea9c877481b7472bf445.svg",
+		"e013ae32a558d7d99d1d94cc14fc6992.png": "./e013ae32a558d7d99d1d94cc14fc6992.png",
+		"0403afd4f2b102d4469c6937509ad5f5.png": "./0403afd4f2b102d4469c6937509ad5f5.png",
+		"79a89b61400e5056eb2f6dcfaf81b166.png": "./79a89b61400e5056eb2f6dcfaf81b166.png",
+		"f31db5443687230abf5f1a3b980b5787.svg": "./f31db5443687230abf5f1a3b980b5787.svg",
+		"10abdb2a2b8fb72f5a334355b9542108.png": "./10abdb2a2b8fb72f5a334355b9542108.png",
+		"2f4cbacd72a672eb8a504c198a95ac7f.png": "./2f4cbacd72a672eb8a504c198a95ac7f.png",
+		"120ad27ce46792b11b263cb9816da52c.png": "./120ad27ce46792b11b263cb9816da52c.png",
+		"379ed3772a775d12fe0748403bf4dc2b.png": "./379ed3772a775d12fe0748403bf4dc2b.png",
+		"26ac726532ce89754d8ce4f16ed0511f.svg": "./26ac726532ce89754d8ce4f16ed0511f.svg",
+		"19df60f7fe2b0fb8862d7e530d39a7a2.svg": "./19df60f7fe2b0fb8862d7e530d39a7a2.svg",
+		"ad245f707445e9ea69db2279ada258f4.png": "./ad245f707445e9ea69db2279ada258f4.png",
+		"c7445fdb870ded51bc2887b617e07664.svg": "./c7445fdb870ded51bc2887b617e07664.svg",
+		"165865cbff6501f2b8a9492e12d8aed4.svg": "./165865cbff6501f2b8a9492e12d8aed4.svg",
+		"47b0ca9e4c460cfac4dbe8772d1f6e3f.png": "./47b0ca9e4c460cfac4dbe8772d1f6e3f.png",
+		"290d592a280fa415cecfa080af835be3.svg": "./290d592a280fa415cecfa080af835be3.svg",
+		"78f40d9a82f6bbdf72311c0c904ff986.svg": "./78f40d9a82f6bbdf72311c0c904ff986.svg",
+		"bfe87225f6e5c970eafbf4c25323da0e.png": "./bfe87225f6e5c970eafbf4c25323da0e.png",
+		"ceb2a1e52dbed3763c2be84157f54bfc.svg": "./ceb2a1e52dbed3763c2be84157f54bfc.svg",
+		"ef6c779e4354fe55c485784049346e1b.svg": "./ef6c779e4354fe55c485784049346e1b.svg",
+		"9a70a4126921285e9080941e21a3e7ad.png": "./9a70a4126921285e9080941e21a3e7ad.png",
+		"2ad6431b2e46023dd275778cc8caf15c.svg": "./2ad6431b2e46023dd275778cc8caf15c.svg",
+		"aafcf1b23778ea42ffc7db3c4469dd43.png": "./aafcf1b23778ea42ffc7db3c4469dd43.png",
+		"ef98d7d6067cc98e56e138bb69d7bd8e.svg": "./ef98d7d6067cc98e56e138bb69d7bd8e.svg",
+		"e4b1f02e1de0d99dee47f2bc08cf3f6b.png": "./e4b1f02e1de0d99dee47f2bc08cf3f6b.png",
+		"b9f28fb991a59be4dd25e69db244dc40.png": "./b9f28fb991a59be4dd25e69db244dc40.png",
+		"15480a7c95bf5ab886a6793981fbc990.png": "./15480a7c95bf5ab886a6793981fbc990.png",
+		"13f0d4b9963590e46cc6aef7de98b7ae.png": "./13f0d4b9963590e46cc6aef7de98b7ae.png",
+		"a810dcdd7567797a466d2f385f99fbd6.png": "./a810dcdd7567797a466d2f385f99fbd6.png",
+		"f0c370e0a0f7c147078efa81cad5cf47.png": "./f0c370e0a0f7c147078efa81cad5cf47.png",
+		"bf6804b543d79c30ab1937607d84f607.svg": "./bf6804b543d79c30ab1937607d84f607.svg",
+		"4d015fd14e0687b69f68ae884a79a288.svg": "./4d015fd14e0687b69f68ae884a79a288.svg",
+		"c9a26ca7e4c536480044627902a7498c.svg": "./c9a26ca7e4c536480044627902a7498c.svg",
+		"87a6c846f085cc31c7f8420e16b6d546.png": "./87a6c846f085cc31c7f8420e16b6d546.png",
+		"624b132d024b56215c37aa438015a64d.png": "./624b132d024b56215c37aa438015a64d.png",
+		"b757e1ec15b6d89fe582d66171fb34fe.svg": "./b757e1ec15b6d89fe582d66171fb34fe.svg",
+		"ad218103222798b295282dec8b6199ef.png": "./ad218103222798b295282dec8b6199ef.png",
+		"e12aac45d47c026ca9434ca0d7a3b77d.png": "./e12aac45d47c026ca9434ca0d7a3b77d.png",
+		"4c7cdad013043896e9da3f0497547ec7.png": "./4c7cdad013043896e9da3f0497547ec7.png",
+		"67c4c5bcd0f0f2a0ea7797a646118eec.png": "./67c4c5bcd0f0f2a0ea7797a646118eec.png",
+		"92f1bd398c31e51a08b7827a492f86bb.svg": "./92f1bd398c31e51a08b7827a492f86bb.svg",
+		"7063686a8de95804a4801a6c00b5e688.png": "./7063686a8de95804a4801a6c00b5e688.png",
+		"d540aed0521c5ea803600a5c0b923c2c.png": "./d540aed0521c5ea803600a5c0b923c2c.png",
+		"da01bb19cdfa8e9c75e5000a077a1bd4.png": "./da01bb19cdfa8e9c75e5000a077a1bd4.png",
+		"9ae40a4c30e3bee419a4ae7433365b3d.png": "./9ae40a4c30e3bee419a4ae7433365b3d.png",
+		"4fcd9b06e39f7b79c814d4ace03ca800.png": "./4fcd9b06e39f7b79c814d4ace03ca800.png",
+		"bd9b6594f1048fc0e5b33fc585ebeed4.png": "./bd9b6594f1048fc0e5b33fc585ebeed4.png",
+		"49bdb0005637f6b0305143c6781730da.png": "./49bdb0005637f6b0305143c6781730da.png",
+		"e2eca11f46c6d301532069ed897b8f51.png": "./e2eca11f46c6d301532069ed897b8f51.png",
+		"6e99c5ec2e6ff964d101fdd3ca28d01e.png": "./6e99c5ec2e6ff964d101fdd3ca28d01e.png",
+		"4694f0904d816f6d4730d38c77b81838.png": "./4694f0904d816f6d4730d38c77b81838.png",
+		"3ca1d0ee1220892b3f42b5f6899373b1.png": "./3ca1d0ee1220892b3f42b5f6899373b1.png",
+		"14e46ec3e2ba471c2adfe8f119052307.svg": "./14e46ec3e2ba471c2adfe8f119052307.svg",
+		"c48114a3d1647b4a5a529cc81289ada1.svg": "./c48114a3d1647b4a5a529cc81289ada1.svg",
+		"7b90bf8b879302a8bf22e04aaf8a2c21.svg": "./7b90bf8b879302a8bf22e04aaf8a2c21.svg",
+		"765f47a8e9c9a1bb261f327a40ce7c6b.svg": "./765f47a8e9c9a1bb261f327a40ce7c6b.svg",
+		"68b2ef8a081b39acfeaa09d4b3c1e6f5.svg": "./68b2ef8a081b39acfeaa09d4b3c1e6f5.svg",
+		"465f504ce9e0fcbca1317db701edd1e0.svg": "./465f504ce9e0fcbca1317db701edd1e0.svg",
+		"43a240725e53301660790b37cd279fcc.svg": "./43a240725e53301660790b37cd279fcc.svg",
+		"13bebd65031929a0dd5b0c54303a6ce2.svg": "./13bebd65031929a0dd5b0c54303a6ce2.svg",
+		"ecc16d6f314a666b02eafda7d4d7e610.svg": "./ecc16d6f314a666b02eafda7d4d7e610.svg",
+		"6eb3d517beaedc624e13961a4ab2891b.svg": "./6eb3d517beaedc624e13961a4ab2891b.svg",
+		"7c80685bf7c2d9063a2488c13bd8a989.svg": "./7c80685bf7c2d9063a2488c13bd8a989.svg",
+		"83a9787d4cb6f3b7632b4ddfebf74367.wav": "./83a9787d4cb6f3b7632b4ddfebf74367.wav",
+		"c1829ff8c28e10f65b2faae24e485dc3.svg": "./c1829ff8c28e10f65b2faae24e485dc3.svg",
+		"b2d8e32f2d79db9442d8bad6b853416d.svg": "./b2d8e32f2d79db9442d8bad6b853416d.svg",
+		"e2709c423768a0773202bd77901e0176.svg": "./e2709c423768a0773202bd77901e0176.svg",
+		"109c3f531eb5ccc091b1a8d933953a3b.svg": "./109c3f531eb5ccc091b1a8d933953a3b.svg",
+		"005827b90fe347cf4ccad961aec56cc9.svg": "./005827b90fe347cf4ccad961aec56cc9.svg",
+		"741c35ced20a7bcfaadab9b0ced7b475.svg": "./741c35ced20a7bcfaadab9b0ced7b475.svg",
+		"21366fbb1f867689cf9170d8001a1f23.svg": "./21366fbb1f867689cf9170d8001a1f23.svg",
+		"dfb5d67031580f2afd159254c1374ddb.svg": "./dfb5d67031580f2afd159254c1374ddb.svg",
+		"4ee73e6d7af627b6f226cfb596c53c75.wav": "./4ee73e6d7af627b6f226cfb596c53c75.wav",
+		"29f78cde54ff9c5f6f4a0e639753e21b.wav": "./29f78cde54ff9c5f6f4a0e639753e21b.wav",
+		"526e09dc6b73e790512595952c659f11.svg": "./526e09dc6b73e790512595952c659f11.svg",
+		"0128450f6dacbb667df283403a0223d5.svg": "./0128450f6dacbb667df283403a0223d5.svg",
+		"9d756d9bdf4ac9dfa55d1a812b56ef47.svg": "./9d756d9bdf4ac9dfa55d1a812b56ef47.svg",
+		"0cf187eebd9368c57819d2be708cf578.svg": "./0cf187eebd9368c57819d2be708cf578.svg",
+		"5419253e330bf2803b756365e4d82cad.svg": "./5419253e330bf2803b756365e4d82cad.svg",
+		"98c02fb291de93871882238318a73eb0.svg": "./98c02fb291de93871882238318a73eb0.svg",
+		"96de867e056602ed84b8f84a8f17d5cf.svg": "./96de867e056602ed84b8f84a8f17d5cf.svg",
+		"104fafbd0df31fda985cdfb8d559db4d.svg": "./104fafbd0df31fda985cdfb8d559db4d.svg",
+		"3a3b19ce6400f96908b4f94ef7375204.svg": "./3a3b19ce6400f96908b4f94ef7375204.svg",
+		"cf3a2e242a3bc512d40f4801ac25e679.svg": "./cf3a2e242a3bc512d40f4801ac25e679.svg",
+		"cce8348ac1b331064220eef6745497aa.svg": "./cce8348ac1b331064220eef6745497aa.svg",
+		"371d18d3d5abc2024c12557cb5167ba5.svg": "./371d18d3d5abc2024c12557cb5167ba5.svg",
+		"1a00878cab563b6fbec89dce118c46b5.svg": "./1a00878cab563b6fbec89dce118c46b5.svg",
+		"2390f53f7065bd33ebbca8468cc2ef2a.svg": "./2390f53f7065bd33ebbca8468cc2ef2a.svg",
+		"2861af8408c16dac65e6012d447069f4.png": "./2861af8408c16dac65e6012d447069f4.png",
+		"7dcd4700d40bc94380942890cff5c23f.svg": "./7dcd4700d40bc94380942890cff5c23f.svg",
+		"7b5af87253160d8d20bc32cf1b659226.svg": "./7b5af87253160d8d20bc32cf1b659226.svg",
+		"a4a8bc3e996d914ab7c7dd034910d77f.wav": "./a4a8bc3e996d914ab7c7dd034910d77f.wav",
+		"12dbe8a3dc91d32d4edc687a54bd084b.wav": "./12dbe8a3dc91d32d4edc687a54bd084b.wav",
+		"ec3a17d9ad360a49c46064d37bfd043b.wav": "./ec3a17d9ad360a49c46064d37bfd043b.wav",
+		"034052d269958e74b683984a486af8e8.wav": "./034052d269958e74b683984a486af8e8.wav",
+		"b3c26151366155aae6ed5ceb625da102.wav": "./b3c26151366155aae6ed5ceb625da102.wav",
+		"3a28826f50bb7a408875c7be8ae95cdc.wav": "./3a28826f50bb7a408875c7be8ae95cdc.wav",
+		"35a8d01b575aaa4199c08fd9391406b1.wav": "./35a8d01b575aaa4199c08fd9391406b1.wav",
+		"54381567268f975568873b69d9d3ac29.wav": "./54381567268f975568873b69d9d3ac29.wav",
+		"3f83835924d733204a1f7f7b92f52ba5.wav": "./3f83835924d733204a1f7f7b92f52ba5.wav",
+		"7a813c96ee0b963bee0920b550af897b.wav": "./7a813c96ee0b963bee0920b550af897b.wav",
+		"d36f6603ec293d2c2198d3ea05109fe0.png": "./d36f6603ec293d2c2198d3ea05109fe0.png",
+		"7eccc94102d3a2a77df228f66a86d3c6.wav": "./7eccc94102d3a2a77df228f66a86d3c6.wav",
+		"ab4ae7d55e08a1cca632db17a74403f0.svg": "./ab4ae7d55e08a1cca632db17a74403f0.svg",
+		"9f6e3cf6f6f5df8ad40217ab10a920dc.svg": "./9f6e3cf6f6f5df8ad40217ab10a920dc.svg",
+		"1e625cc6936c3a770c16aa58abd1a0a9.svg": "./1e625cc6936c3a770c16aa58abd1a0a9.svg",
+		"918bde8d0a16916641ee44d47002e8c5.svg": "./918bde8d0a16916641ee44d47002e8c5.svg",
+		"8b0ff5f1f2a5a0a833af86f6dbb2f3fc.svg": "./8b0ff5f1f2a5a0a833af86f6dbb2f3fc.svg",
+		"a0a4a8a5b6c331f0a5c381dac3e75da1.svg": "./a0a4a8a5b6c331f0a5c381dac3e75da1.svg",
+		"4d01fe5cd2f2f8bbe7560ffdc01ec98c.svg": "./4d01fe5cd2f2f8bbe7560ffdc01ec98c.svg",
+		"e7c60ba33f55a0ebb6b85a5935212fcb.svg": "./e7c60ba33f55a0ebb6b85a5935212fcb.svg",
+		"6db8c435ebd959482ce2223afa91fbb7.svg": "./6db8c435ebd959482ce2223afa91fbb7.svg",
+		"9c313bc2e29cd5b25369bf694fede889.svg": "./9c313bc2e29cd5b25369bf694fede889.svg",
+		"45df261cfa705c5143ba18b216d4de7b.svg": "./45df261cfa705c5143ba18b216d4de7b.svg",
+		"560cda5b82ac90ed21923e40bec282ff.svg": "./560cda5b82ac90ed21923e40bec282ff.svg",
+		"268d25ac4cb3a562931037e5d25bb6d2.svg": "./268d25ac4cb3a562931037e5d25bb6d2.svg",
+		"e593ee187dd1b928888b101a34613832.svg": "./e593ee187dd1b928888b101a34613832.svg",
+		"d5300301da3ee2b22f9ce65e14625cb4.svg": "./d5300301da3ee2b22f9ce65e14625cb4.svg",
+		"64425305e02960b444dff3bb11abf64e.svg": "./64425305e02960b444dff3bb11abf64e.svg",
+		"1305967da4ea2edac8616c6fcdb593a8.svg": "./1305967da4ea2edac8616c6fcdb593a8.svg",
+		"3a4af7b7c7e84c709214bea65316cdab.svg": "./3a4af7b7c7e84c709214bea65316cdab.svg",
+		"5aed5dd7b51c45b5c5f193a72dad8da9.svg": "./5aed5dd7b51c45b5c5f193a72dad8da9.svg",
+		"856e9ab8d6875be53900abcf4c9a2bd5.svg": "./856e9ab8d6875be53900abcf4c9a2bd5.svg",
+		"c830a925daac7818d03105efdc43bd6d.svg": "./c830a925daac7818d03105efdc43bd6d.svg",
+		"dd43f2fd370115516703b6ad5c2c829f.wav": "./dd43f2fd370115516703b6ad5c2c829f.wav",
+		"15ff275f860f88fd6fb0df652940087c.wav": "./15ff275f860f88fd6fb0df652940087c.wav",
+		"b0046165cd477b0ac9322fe9c6e575da.wav": "./b0046165cd477b0ac9322fe9c6e575da.wav",
+		"e55cc430fe81644c375df61ace3b436e.wav": "./e55cc430fe81644c375df61ace3b436e.wav",
+		"e0f9e0a7da466754fd864d19a5e74c3d.wav": "./e0f9e0a7da466754fd864d19a5e74c3d.wav",
+		"872cd47151c9cfe6400c0b9835379be8.svg": "./872cd47151c9cfe6400c0b9835379be8.svg",
+		"869de08621add767b00b2cc29c682238.svg": "./869de08621add767b00b2cc29c682238.svg",
+		"618308724af4f81b6cdd77d8671b573b.svg": "./618308724af4f81b6cdd77d8671b573b.svg",
+		"b0e285c6c024e96b2af2a92e9e049d7b.png": "./b0e285c6c024e96b2af2a92e9e049d7b.png",
+		"5ad88b987ac8c7f0edc8907e6f0cd066.svg": "./5ad88b987ac8c7f0edc8907e6f0cd066.svg",
+		"17d201be291b08671bbde3aadf8d447d.svg": "./17d201be291b08671bbde3aadf8d447d.svg",
+		"4770d8c36057015d0dca795f98e85597.svg": "./4770d8c36057015d0dca795f98e85597.svg",
+		"79ff84b5e7f4fcf36a8e824a9bad9313.svg": "./79ff84b5e7f4fcf36a8e824a9bad9313.svg",
+		"6c1d3aa6fdc6a4a282ec9466926ada0f.svg": "./6c1d3aa6fdc6a4a282ec9466926ada0f.svg",
+		"52336929a78fd4b7e61fcc2977e9f905.svg": "./52336929a78fd4b7e61fcc2977e9f905.svg",
+		"052ef1f40d7276b76fcf1991a53470fa.svg": "./052ef1f40d7276b76fcf1991a53470fa.svg",
+		"7c6b261af29d10471895b8a5a06d275c.svg": "./7c6b261af29d10471895b8a5a06d275c.svg",
+		"fdb8cd91225c0eb7dffb03a4d267aac3.svg": "./fdb8cd91225c0eb7dffb03a4d267aac3.svg",
+		"71d73c0edd0d90c2457f19fa2f0a17a9.svg": "./71d73c0edd0d90c2457f19fa2f0a17a9.svg",
+		"4b0d93ac35038b59f24c0e9f7d646d32.svg": "./4b0d93ac35038b59f24c0e9f7d646d32.svg",
+		"1bc18dcb6d132df7cbf5920346b975f0.wav": "./1bc18dcb6d132df7cbf5920346b975f0.wav",
+		"1aa6877657049096fb657176695f9943.wav": "./1aa6877657049096fb657176695f9943.wav",
+		"b76e5cb6913f690a6363f3f266845a23.svg": "./b76e5cb6913f690a6363f3f266845a23.svg",
+		"bb1bd4392235395038463465f417e713.png": "./bb1bd4392235395038463465f417e713.png",
+		"2a127bb1b86bb681406af0cf09e4b831.png": "./2a127bb1b86bb681406af0cf09e4b831.png",
+		"3f11f0696e2fe06aed02c98cbc603478.png": "./3f11f0696e2fe06aed02c98cbc603478.png",
+		"e05756bc3486f30c23c0939bf9a5ed59.png": "./e05756bc3486f30c23c0939bf9a5ed59.png",
+		"bb9e993bc45e338541536ae2d352baa0.png": "./bb9e993bc45e338541536ae2d352baa0.png",
+		"513f4e8e9ea76add3295be0f1f7baeb6.png": "./513f4e8e9ea76add3295be0f1f7baeb6.png",
+		"0ecbcbc61b71325f86ea2bed49550953.png": "./0ecbcbc61b71325f86ea2bed49550953.png",
+		"82542c855c34415383a912295c9a45c1.png": "./82542c855c34415383a912295c9a45c1.png",
+		"7627fbc6e91a918bc2a2786951ec7c8b.png": "./7627fbc6e91a918bc2a2786951ec7c8b.png",
+		"6780103568ffb079413de316463c11be.png": "./6780103568ffb079413de316463c11be.png",
+		"68d55d0812f0bc6bdb3ca172babc0eb9.png": "./68d55d0812f0bc6bdb3ca172babc0eb9.png",
+		"6549d4d9741e5ed7de5bf266c5a8378a.png": "./6549d4d9741e5ed7de5bf266c5a8378a.png",
+		"c6ba7597fa2c9f0848af75316c593d18.png": "./c6ba7597fa2c9f0848af75316c593d18.png",
+		"376ea6140a3587df8b446f86e7402d71.png": "./376ea6140a3587df8b446f86e7402d71.png",
+		"2c0493f295d24dafde5184c4756f7fbd.png": "./2c0493f295d24dafde5184c4756f7fbd.png",
+		"b40f77d0ec82e0e72048e5d8cacc94ad.png": "./b40f77d0ec82e0e72048e5d8cacc94ad.png",
+		"52c21f9e9091dca0dbb6a0e5b4269e93.png": "./52c21f9e9091dca0dbb6a0e5b4269e93.png",
+		"80ed4fdf9acf9353ebb9df03e82aa28e.png": "./80ed4fdf9acf9353ebb9df03e82aa28e.png",
+		"e961fe74e139d120b2432aa17e6aa817.png": "./e961fe74e139d120b2432aa17e6aa817.png",
+		"771395ec3a05fcba45c36f1ddf6977bb.png": "./771395ec3a05fcba45c36f1ddf6977bb.png",
+		"a3a25aef18b53cd587349072c7993dbf.png": "./a3a25aef18b53cd587349072c7993dbf.png",
+		"43fa57e982e067cfdafa45c829b1ef62.png": "./43fa57e982e067cfdafa45c829b1ef62.png",
+		"252720cb7705cd920f765085add6476e.png": "./252720cb7705cd920f765085add6476e.png",
+		"142ed6828a1622244f9efd3f8330c5f1.png": "./142ed6828a1622244f9efd3f8330c5f1.png",
+		"d592495aac3c13afae362bc7462b365c.png": "./d592495aac3c13afae362bc7462b365c.png",
+		"397ba38738484319a790d9ade6871bd7.png": "./397ba38738484319a790d9ade6871bd7.png",
+		"e9901ae381bd7c762733d5adbb7897e8.png": "./e9901ae381bd7c762733d5adbb7897e8.png",
+		"61cae3ba738e9089b27603c3973094dc.png": "./61cae3ba738e9089b27603c3973094dc.png",
+		"28882000f52a651f0666042b59185a7a.png": "./28882000f52a651f0666042b59185a7a.png",
+		"be55783c288851c60b9ba7e26702473c.png": "./be55783c288851c60b9ba7e26702473c.png",
+		"23090af5bfe52b52d0596e95cca7c534.png": "./23090af5bfe52b52d0596e95cca7c534.png",
+		"131f7d5b554a81c43b46ec74e21285ee.png": "./131f7d5b554a81c43b46ec74e21285ee.png",
+		"5c932cf6beba944a2a9b561d88baf6f4.png": "./5c932cf6beba944a2a9b561d88baf6f4.png",
+		"c9f2e861625190b25a85025f03384771.png": "./c9f2e861625190b25a85025f03384771.png",
+		"86b540e9c47a31d2229e21edadfc177f.png": "./86b540e9c47a31d2229e21edadfc177f.png",
+		"aea3ace139f084bdd00d383d50fda20b.png": "./aea3ace139f084bdd00d383d50fda20b.png",
+		"6a1cef0ce0fe70c724ab9c910b29eeb4.png": "./6a1cef0ce0fe70c724ab9c910b29eeb4.png",
+		"0d7f3d55fb0d2e2cbb7de138fdce5a2c.png": "./0d7f3d55fb0d2e2cbb7de138fdce5a2c.png",
+		"d2a0ddc6fc11f0fe988d527aa7fc9387.png": "./d2a0ddc6fc11f0fe988d527aa7fc9387.png",
+		"cdadea96cf5de5da23cf6692e22b71ca.png": "./cdadea96cf5de5da23cf6692e22b71ca.png",
+		"589d77c0adf86aa17d056cd0e7f1ccb3.png": "./589d77c0adf86aa17d056cd0e7f1ccb3.png",
+		"39f86c4b63931e057688d8758f83f358.png": "./39f86c4b63931e057688d8758f83f358.png",
+		"5eb5b43377eaa690a250e4b03455e245.png": "./5eb5b43377eaa690a250e4b03455e245.png",
+		"e31bfe78a7a52873801ab7492c550662.png": "./e31bfe78a7a52873801ab7492c550662.png",
+		"e948b0a46a9b09cdd9f0166d2201f18b.png": "./e948b0a46a9b09cdd9f0166d2201f18b.png",
+		"3cdbe251f6ec7a7d719f5422c116bf84.png": "./3cdbe251f6ec7a7d719f5422c116bf84.png",
+		"ce05cccab95c33b56446264eb8446763.png": "./ce05cccab95c33b56446264eb8446763.png",
+		"d2cad782aacfe06bb38698dab355d0ae.png": "./d2cad782aacfe06bb38698dab355d0ae.png",
+		"0f904dfb57b997b65513ea1ec8d509c0.png": "./0f904dfb57b997b65513ea1ec8d509c0.png",
+		"8c08fd8cf385e002b3b02062fdfccf45.png": "./8c08fd8cf385e002b3b02062fdfccf45.png",
+		"eec2c71705a9d0487312df3535405baf.png": "./eec2c71705a9d0487312df3535405baf.png",
+		"69fbae060917ce2c24622c972fa206f4.png": "./69fbae060917ce2c24622c972fa206f4.png",
+		"055ef0419d02893fbd42ecd1bc88dd2f.png": "./055ef0419d02893fbd42ecd1bc88dd2f.png",
+		"ad81cf0b3fdbc209980bae3bdf34229e.png": "./ad81cf0b3fdbc209980bae3bdf34229e.png",
+		"33ca478560126368fc871e39ef431893.png": "./33ca478560126368fc871e39ef431893.png",
+		"a2605a3d78bb06d23f44eb8484164d3f.png": "./a2605a3d78bb06d23f44eb8484164d3f.png",
+		"7850f1d6dd33ac47138cebea7b00a7c3.png": "./7850f1d6dd33ac47138cebea7b00a7c3.png",
+		"b15dbd60492c381fd26a01ebcc84d9d5.png": "./b15dbd60492c381fd26a01ebcc84d9d5.png",
+		"fac6ce834b6989fb0075c072ce56ef56.png": "./fac6ce834b6989fb0075c072ce56ef56.png",
+		"f6d13b4709c4d4f2151e082e1b7ef2d5.png": "./f6d13b4709c4d4f2151e082e1b7ef2d5.png",
+		"100c57b8c29719a07b4dc858ed795aca.svg": "./100c57b8c29719a07b4dc858ed795aca.svg",
+		"20dfd29b08e3964782219ba93f23b105.svg": "./20dfd29b08e3964782219ba93f23b105.svg",
+		"d8804bdf0f63e83ab7fa2f07f1b9d139.svg": "./d8804bdf0f63e83ab7fa2f07f1b9d139.svg",
+		"c89687dfd81ad199d5baf62c30ca1b53.wav": "./c89687dfd81ad199d5baf62c30ca1b53.wav",
+		"7288cee5a7cce7c96ea2f463579ffeb0.svg": "./7288cee5a7cce7c96ea2f463579ffeb0.svg",
+		"c18dfd8b13b80f0efee76d412cbfa656.svg": "./c18dfd8b13b80f0efee76d412cbfa656.svg",
+		"5f198ca22caae940a58d068d31008ae9.svg": "./5f198ca22caae940a58d068d31008ae9.svg",
+		"96c54396e66b4d8763a00bfb72f6e8e7.svg": "./96c54396e66b4d8763a00bfb72f6e8e7.svg",
+		"9c5c4ff6dd5021ff59c8003b8d6a96a2.svg": "./9c5c4ff6dd5021ff59c8003b8d6a96a2.svg",
+		"fc628ec656b8d97afb2aa9d0d7c35041.svg": "./fc628ec656b8d97afb2aa9d0d7c35041.svg",
+		"e81047a24821cdd5c049af95e17a8578.svg": "./e81047a24821cdd5c049af95e17a8578.svg",
+		"7b71c8eb9e3da6f349989efc237fd6c1.svg": "./7b71c8eb9e3da6f349989efc237fd6c1.svg",
+		"075c22abd32e89149303969bdd6a8f98.svg": "./075c22abd32e89149303969bdd6a8f98.svg",
+		"f804f6c5b897f25105ec807b97aa4e46.svg": "./f804f6c5b897f25105ec807b97aa4e46.svg",
+		"9722724496f084669c7ca5ce9c795a79.svg": "./9722724496f084669c7ca5ce9c795a79.svg",
+		"16b0a85155ae23c52bbe21c928f4619f.svg": "./16b0a85155ae23c52bbe21c928f4619f.svg",
+		"f94ba81c1b4d0d8db0ae641a37e163af.svg": "./f94ba81c1b4d0d8db0ae641a37e163af.svg",
+		"abefaf4b800ff4306b9999ee68cfc803.svg": "./abefaf4b800ff4306b9999ee68cfc803.svg",
+		"da14a370c03d9f0115617d0c0553fe97.svg": "./da14a370c03d9f0115617d0c0553fe97.svg",
+		"e609e4e6843b4c4b7a418b0f8b4ef4e8.svg": "./e609e4e6843b4c4b7a418b0f8b4ef4e8.svg",
+		"5f29733b60961dc9b6e600485534bf0a.svg": "./5f29733b60961dc9b6e600485534bf0a.svg",
+		"53b70ea1b3bb466fd6ec6f25a118dfe4.svg": "./53b70ea1b3bb466fd6ec6f25a118dfe4.svg",
+		"55f3122bb0fef0658381ae607a4c2ca6.svg": "./55f3122bb0fef0658381ae607a4c2ca6.svg",
+		"b69a39b19d04f7b5d2c7ecb793e0c388.svg": "./b69a39b19d04f7b5d2c7ecb793e0c388.svg",
+		"8e182e510082e6105739f315446c87f3.svg": "./8e182e510082e6105739f315446c87f3.svg",
+		"25c4d6c650d6441c9c954f96dd1b0946.wav": "./25c4d6c650d6441c9c954f96dd1b0946.wav",
+		"c78f611c339b0abb3a911468acbaf776.wav": "./c78f611c339b0abb3a911468acbaf776.wav",
+		"c5fda411225776743bc17b73ec9379f9.wav": "./c5fda411225776743bc17b73ec9379f9.wav",
+		"e44265b236f1d717519ee90468a6e14e.wav": "./e44265b236f1d717519ee90468a6e14e.wav",
+		"ab4accc9d5723059294c2b70d6ef5e8f.wav": "./ab4accc9d5723059294c2b70d6ef5e8f.wav",
+		"67556e554a46644278d7a102ee5a4016.png": "./67556e554a46644278d7a102ee5a4016.png",
+		"f6a074d609bb83cb40838b4831c5b8f3.png": "./f6a074d609bb83cb40838b4831c5b8f3.png",
+		"b0ab833ed81f1eb0e1ad3e2dc19d4d48.png": "./b0ab833ed81f1eb0e1ad3e2dc19d4d48.png",
+		"4b5695c974131f200fedf334eb17be5e.png": "./4b5695c974131f200fedf334eb17be5e.png",
+		"04fe31c1deac6fc77e240f5ee139e46a.png": "./04fe31c1deac6fc77e240f5ee139e46a.png",
+		"31709befd7b40080e96e56cbc9df8a43.png": "./31709befd7b40080e96e56cbc9df8a43.png",
+		"c3feaf0cb8a1348681860d5051d58056.png": "./c3feaf0cb8a1348681860d5051d58056.png",
+		"a4505a34b87a27be2e5742098aedc996.png": "./a4505a34b87a27be2e5742098aedc996.png",
+		"fe783e2ce95f38f22dcd8ffd0ef4fad0.png": "./fe783e2ce95f38f22dcd8ffd0ef4fad0.png",
+		"8b842929f20968f514d61fe479789076.png": "./8b842929f20968f514d61fe479789076.png",
+		"f0205fa1d1cfb950a0d1b0c2fea334b7.png": "./f0205fa1d1cfb950a0d1b0c2fea334b7.png",
+		"ef834480f3f91c39cacda5946d24b94d.png": "./ef834480f3f91c39cacda5946d24b94d.png",
+		"8ed1fdee1b415ec7a2e74f49bcd110c4.png": "./8ed1fdee1b415ec7a2e74f49bcd110c4.png",
+		"82197ccbd0f8034d8bd656a2217a831b.png": "./82197ccbd0f8034d8bd656a2217a831b.png",
+		"0c8bcbb2a3e69ae60ddbb3535fbb6d8e.png": "./0c8bcbb2a3e69ae60ddbb3535fbb6d8e.png",
+		"b067795b08340b7388a8364758729d47.png": "./b067795b08340b7388a8364758729d47.png",
+		"497084e102b94f1fbacc67047c07b5b2.png": "./497084e102b94f1fbacc67047c07b5b2.png",
+		"614d4410e5cefcc46701e4851a38300b.png": "./614d4410e5cefcc46701e4851a38300b.png",
+		"7b14c6939136017b129134b8c5405d36.png": "./7b14c6939136017b129134b8c5405d36.png",
+		"a154517474b2f9f6de77ba18ae247631.png": "./a154517474b2f9f6de77ba18ae247631.png",
+		"e06959497b23fd55bc4f7a0bd7b950f0.png": "./e06959497b23fd55bc4f7a0bd7b950f0.png",
+		"a8997c3efeeda07fc4d7ba63d5663695.png": "./a8997c3efeeda07fc4d7ba63d5663695.png",
+		"7a6162e424a14805fb1ca1e04c936cbc.png": "./7a6162e424a14805fb1ca1e04c936cbc.png",
+		"5df3314e21325a0edd811032a796f106.png": "./5df3314e21325a0edd811032a796f106.png",
+		"1fd15ca8de1f9db4b6d5970fc02f701e.png": "./1fd15ca8de1f9db4b6d5970fc02f701e.png",
+		"1ed433815caef3e96328167dc8f4a08b.png": "./1ed433815caef3e96328167dc8f4a08b.png",
+		"915dc038e23d72836ce238ae0be272af.png": "./915dc038e23d72836ce238ae0be272af.png",
+		"5b0868c622d4893c41b4c7c4d7726486.png": "./5b0868c622d4893c41b4c7c4d7726486.png",
+		"15b92bdba6466a9aaa7b526ce6e29d79.png": "./15b92bdba6466a9aaa7b526ce6e29d79.png",
+		"0560a549a4b86fcb4831a8c32fb86efa.png": "./0560a549a4b86fcb4831a8c32fb86efa.png",
+		"41f72c7b10ac600e2295fffa81cc3afe.png": "./41f72c7b10ac600e2295fffa81cc3afe.png",
+		"53f29b05c3529b28db03e497a0e44167.png": "./53f29b05c3529b28db03e497a0e44167.png",
+		"ce8829e3f1c02a6b981afba7049def1d.png": "./ce8829e3f1c02a6b981afba7049def1d.png",
+		"0fbdce8d3588499260871fe0d6f442f5.png": "./0fbdce8d3588499260871fe0d6f442f5.png",
+		"395f0f23049030da57db030b7ed9c994.png": "./395f0f23049030da57db030b7ed9c994.png",
+		"001e7d3f64a575f29088691ce6009f29.png": "./001e7d3f64a575f29088691ce6009f29.png",
+		"91384c9f9a1735d03f651a995ff2062c.png": "./91384c9f9a1735d03f651a995ff2062c.png",
+		"7301dc23a30e19e18c61ed30b753264f.png": "./7301dc23a30e19e18c61ed30b753264f.png",
+		"56d209ed622bc8c6c7544c7d40477704.png": "./56d209ed622bc8c6c7544c7d40477704.png",
+		"c5b7f0bcf6df0165cee8987e21c08c1c.png": "./c5b7f0bcf6df0165cee8987e21c08c1c.png",
+		"9695045342e882be9a608949891510cf.png": "./9695045342e882be9a608949891510cf.png",
+		"f9674f455cd8035b0326f0989ae0e431.png": "./f9674f455cd8035b0326f0989ae0e431.png",
+		"e21365fb6b63d5c0c728974e432f0d6b.png": "./e21365fb6b63d5c0c728974e432f0d6b.png",
+		"f58de7f88a3328b87bd95756846e61a3.png": "./f58de7f88a3328b87bd95756846e61a3.png",
+		"cb890c63c7a4fc7cb78e1ba4b7fa1fdc.png": "./cb890c63c7a4fc7cb78e1ba4b7fa1fdc.png",
+		"68ef660719139ca5ca7950a12e2d88d7.png": "./68ef660719139ca5ca7950a12e2d88d7.png",
+		"8378f6043063a5ab7788efb11a0318a7.png": "./8378f6043063a5ab7788efb11a0318a7.png",
+		"d96d82e46c6144ea5644cf6005e3a652.png": "./d96d82e46c6144ea5644cf6005e3a652.png",
+		"93fa718ab7a34addb93ef83c027ab3c7.png": "./93fa718ab7a34addb93ef83c027ab3c7.png",
+		"3f744d948eff4a6c95e9939a92bf5e3b.png": "./3f744d948eff4a6c95e9939a92bf5e3b.png",
+		"c08b72bbcd2fd418f737407895ab011a.png": "./c08b72bbcd2fd418f737407895ab011a.png",
+		"a3fc1cc530b7d8593e887235d61cdac5.png": "./a3fc1cc530b7d8593e887235d61cdac5.png",
+		"8001fc4815923eb643e884e8646ad668.png": "./8001fc4815923eb643e884e8646ad668.png",
+		"47503d46f329a9262c44a65c71d390eb.png": "./47503d46f329a9262c44a65c71d390eb.png",
+		"e5d077f17fb5a75ffe646fcccf0cda81.png": "./e5d077f17fb5a75ffe646fcccf0cda81.png",
+		"7aedf25042f95eb1e0707c0a45f22358.png": "./7aedf25042f95eb1e0707c0a45f22358.png",
+		"773f509367d783ead77f8934be5d0314.png": "./773f509367d783ead77f8934be5d0314.png",
+		"b0f448c7fcf331425713aa5c8d6a29a3.png": "./b0f448c7fcf331425713aa5c8d6a29a3.png",
+		"a329fe96d2cff9ef7f324e8ab3cbfd1c.png": "./a329fe96d2cff9ef7f324e8ab3cbfd1c.png",
+		"4d689710e6dd43daf0c3fff6be3f2bd7.png": "./4d689710e6dd43daf0c3fff6be3f2bd7.png",
+		"373fd5ecb3d9e8104a4ffcf80c46a82b.png": "./373fd5ecb3d9e8104a4ffcf80c46a82b.png",
+		"4eaab46a0fe93084ed01dc3731697f45.png": "./4eaab46a0fe93084ed01dc3731697f45.png",
+		"bd4dcc47b4c10064326535276fa59a2c.png": "./bd4dcc47b4c10064326535276fa59a2c.png",
+		"96178c382af84bef1ae9f7c538dfb5ce.png": "./96178c382af84bef1ae9f7c538dfb5ce.png",
+		"f94ae0d72b38b7cd5f9ffc636227e4f5.png": "./f94ae0d72b38b7cd5f9ffc636227e4f5.png",
+		"8a930c0e37c714b4212287fb5ac13fb9.png": "./8a930c0e37c714b4212287fb5ac13fb9.png",
+		"6b77747cc80106dc5acf8e3c1330fd0d.png": "./6b77747cc80106dc5acf8e3c1330fd0d.png",
+		"89d6b4698fe75a566f31022bed2b7063.png": "./89d6b4698fe75a566f31022bed2b7063.png",
+		"7997df35f3db0e65cbbdfb6148613eea.png": "./7997df35f3db0e65cbbdfb6148613eea.png",
+		"22e368f55e9dc73952a349ee4574386f.png": "./22e368f55e9dc73952a349ee4574386f.png",
+		"995de8efc3377edeea09b450f423f116.png": "./995de8efc3377edeea09b450f423f116.png",
+		"39fc3519d3fe2903e3c20484a8421296.png": "./39fc3519d3fe2903e3c20484a8421296.png",
+		"f6c67720644591e0985eb4f7efacf2b6.png": "./f6c67720644591e0985eb4f7efacf2b6.png",
+		"b0d837fa6cfc1f16f566d561f9619b87.png": "./b0d837fa6cfc1f16f566d561f9619b87.png",
+		"c3f259c620f71702908376e87b086284.png": "./c3f259c620f71702908376e87b086284.png",
+		"7d1339417adf08c54da8cf3f4c10b8b6.png": "./7d1339417adf08c54da8cf3f4c10b8b6.png",
+		"02f4079820cb98ddad7497b1f138dfdb.png": "./02f4079820cb98ddad7497b1f138dfdb.png",
+		"1371d9ac630b981088821acd24970fef.png": "./1371d9ac630b981088821acd24970fef.png",
+		"1ba60c2aa30fb1d6e4446a1ae48733b8.png": "./1ba60c2aa30fb1d6e4446a1ae48733b8.png",
+		"b079f1fdfcde06ef056f528493f5dfe6.png": "./b079f1fdfcde06ef056f528493f5dfe6.png",
+		"1b7954cbc21cfd6440f3d821da90bf87.png": "./1b7954cbc21cfd6440f3d821da90bf87.png",
+		"ebeaa7fed205f305ab201155b7f2ddb5.png": "./ebeaa7fed205f305ab201155b7f2ddb5.png",
+		"915e2c356783b726e7fa9fa1f157ba6d.png": "./915e2c356783b726e7fa9fa1f157ba6d.png",
+		"83292882d8727ddc08cf20526b322fcf.png": "./83292882d8727ddc08cf20526b322fcf.png",
+		"2c3c616f713cf1c800352a3f7351516a.png": "./2c3c616f713cf1c800352a3f7351516a.png",
+		"02a4f6430d8dd04b6367ae4d3ef7a742.png": "./02a4f6430d8dd04b6367ae4d3ef7a742.png",
+		"845ef75c76a3a9523ffc64af44bccae0.png": "./845ef75c76a3a9523ffc64af44bccae0.png",
+		"9800850d838899e47229b1c4e0ed99ae.png": "./9800850d838899e47229b1c4e0ed99ae.png",
+		"d97b62dd7f74dc21bfe5fbfae2dd27db.png": "./d97b62dd7f74dc21bfe5fbfae2dd27db.png",
+		"b05adddce2bae66202e26090520a976c.png": "./b05adddce2bae66202e26090520a976c.png",
+		"cde0ef4d3868f830e611093a4bd351f5.png": "./cde0ef4d3868f830e611093a4bd351f5.png",
+		"3bb4295904bf9346e8426f8bd2f2356d.png": "./3bb4295904bf9346e8426f8bd2f2356d.png",
+		"2569b63602baea02cf1e86923f64b3e3.svg": "./2569b63602baea02cf1e86923f64b3e3.svg",
+		"3b61a3436cf1b11cd6d62d35886987aa.png": "./3b61a3436cf1b11cd6d62d35886987aa.png",
+		"fbde38921b81a9318060dbe522bc027b.svg": "./fbde38921b81a9318060dbe522bc027b.svg"
+	}
+}
+init(initOptions)
+</script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="13.271414756774902" height="13.089462280273438" viewBox="0.21969997882843018 0.21233749389648438 13.271414756774902 13.089462280273438">
+  <defs>
+    <linearGradient id="grad_1" y2="1" x2="0">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </linearGradient>
+  <linearGradient id="grad_1-0.30323517322540283,-0.2590123414993286,-0.2590123414993286,0.30323517322540283,28.7,5.2" y2="12.8018" x2="2.5391" x1="10.5944" y1="3.3712" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </linearGradient></defs>
+  <!-- Exported by Scratch - http://scratch.mit.edu/ -->
+  <g id="ID0.47744428273290396">
+    <g id="ID0.3734469981864095">
+      <path id="ID0.8241717438213527" fill="#660000" stroke="#000000" stroke-width="0.003426089653653261" d="M 5.1956 9.5966 L 5.2007 9.6165 L 5.0975 9.6429 L 5.0924 9.623 L 5.1956 9.5966 Z "/>
+      <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.003426089653653261" stroke-linecap="round" d="M 5.1993 9.6057 L 5.2111 9.5965 "/>
+    </g>
+    <g id="ID0.3734469981864095">
+      <path id="ID0.8241717438213527" fill="#660000" stroke="#000000" stroke-width="0.0034260895433275845" d="M 5.2435 9.7502 L 5.2594 9.7631 L 5.1922 9.8458 L 5.1763 9.8328 L 5.2435 9.7502 Z "/>
+      <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.0034260895433275845" stroke-linecap="round" d="M 5.2519 9.7553 L 5.2559 9.7408 "/>
+    </g>
+    <g id="ID0.3734469981864095">
+      <path id="ID0.8241717438213527" fill="url(#grad_1-0.30323517322540283,-0.2590123414993286,-0.2590123414993286,0.30323517322540283,28.7,5.2)" stroke="#000000" stroke-width="0.39879689483495845" d="M 10.5944 3.3712 L 8.7749 1.8171 L 0.7197 11.2477 L 2.5391 12.8018 L 10.5944 3.3712 Z "/>
+      <path id="ID0.869339314289391" fill="none" stroke="#000000" stroke-width="0.39879689483495845" stroke-linecap="round" d="M 9.8337 2.5117 L 11.4005 1.752 "/>
+    </g>
+  </g>
+  <text id="ID0.9592428067699075" fill="#FFFFFF" text-anchor="start" font-family="Serif" font-size="22" transform="matrix(0.057508 -0.0700345 0.0700345 0.057508 2.88488 7.9299)" stroke-width="1" alignment-baseline="text-before-edge" xml:space="preserve"><tspan x="0" style="white-space: pre" dy="1.25em">TNT</tspan></text>
+  <path id="ID0.48219369957223535" fill="#FF9400" stroke="none" d="M 11.641 0.9945 C 11.929 0.8313 12.2206 0.7374 12.4582 0.7166 C 12.6971 0.6961 12.8813 0.7493 12.9562 0.8815 C 13.0311 1.0138 12.9821 1.199 12.8417 1.3935 C 12.7017 1.5866 12.4712 1.7884 12.1832 1.9516 C 11.8952 2.1147 11.6036 2.2087 11.366 2.2295 C 11.1271 2.2499 10.9429 2.1968 10.868 2.0646 C 10.7931 1.9323 10.8422 1.747 10.9825 1.5526 C 11.1225 1.3595 11.353 1.1577 11.641 0.9945 Z " stroke-width="0.9999999574151857"/>
+</svg>

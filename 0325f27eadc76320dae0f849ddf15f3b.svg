@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="41.241102739012355" height="16.44628862921011" viewBox="0.6601997396170527 1.0102116843878657 41.241102739012355 16.44628862921011">
+  <defs>
+    <radialGradient id="grad_1" cx="0.7118000000000001" cy="0.28" r="0.9359999999999999">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </radialGradient>
+    <radialGradient id="grad_2" cx="0.7118000000000001" cy="0.28" r="0.9359999999999999">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </radialGradient>
+  <radialGradient id="grad_1-.5218002796173096,0,0,0.5218002796173096,-80.19999999999999,-88.6" cx="39.4621" cy="9.8585" r="5.7042" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </radialGradient><radialGradient id="grad_2-.49697521328926086,-0.15903204679489136,0.15903204679489136,0.49697521328926086,-108.35,-54.55" cx="35.6268" cy="2.7542" r="5.7042" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CC0000" stop-opacity="1"/>
+      <stop offset="1" stop-color="#990000" stop-opacity="1"/>
+    </radialGradient></defs>
+  <!-- Exported by Scratch - http://scratch.mit.edu/ -->
+  <g id="ID0.4744078288786113">
+    <g id="ID0.6423887554556131">
+      <image id="ID0.719466760288924" width="2" height="2" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAADklEQVR42mNhgAIWGAMAAH4ACYwGaSAAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=" transform="matrix(0.2609001398086548,0,0,0.2609001398086548,24.599999999999998,14.3)" stroke-width="1" style="image-rendering: optimizespeed; image-rendering: pixelated;"/>
+      <path id="ID0.8567995992489159" fill="#E7B17D" stroke="#000000" stroke-width="1.0436005592346191" d="M 3.4992 9.106 L 35.329 9.106 L 35.329 13.2804 L 3.4992 13.2804 L 3.4992 9.106 Z "/>
+      <path id="ID0.14121821569278836" fill="none" stroke="#FFD4AA" stroke-width="1.0436005592346191" stroke-linecap="round" d="M 4.6732 10.541 L 34.0245 10.541 "/>
+      <path id="ID0.804306146223098" fill="url(#grad_1-.5218002796173096,0,0,0.5218002796173096,-80.19999999999999,-88.6)" stroke="#000000" stroke-width="1.0436005592346191" d="M 38.053 8.3244 C 38.9708 8.3244 39.8026 8.6312 40.4047 9.1275 C 41.0069 9.6232 41.3795 10.3083 41.3795 11.0639 C 41.3795 11.8194 41.0069 12.5045 40.4047 13.0003 C 39.8026 13.4965 38.9708 13.8033 38.053 13.8033 C 37.1351 13.8033 36.3034 13.4965 35.7012 13.0003 C 35.0991 12.5045 34.7265 11.8194 34.7265 11.0639 C 34.7265 10.3083 35.0991 9.6232 35.7012 9.1275 C 36.3034 8.6312 37.1351 8.3244 38.053 8.3244 Z "/>
+    </g>
+    <g id="ID0.6423887554556131">
+      <image id="ID0.719466760288924" width="2" height="2" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAADklEQVR42mNhgAIWGAMAAH4ACYwGaSAAAAAtdEVYdFNvZnR3YXJlAGJ5LmJsb29kZHkuY3J5cHRvLmltYWdlLlBORzI0RW5jb2RlcqgGf+4AAAAASUVORK5CYII=" transform="matrix(0.24848760664463043,-0.07951602339744568,0.07951602339744568,0.24848760664463043,22.849999999999998,11.45)" stroke-width="1" style="image-rendering: optimizespeed; image-rendering: pixelated;"/>
+      <path id="ID0.8567995992489159" fill="#E7B17D" stroke="#000000" stroke-width="1.0436006027818858" d="M 1.182 12.9589 L 31.4975 3.2579 L 32.7697 7.2337 L 2.4543 16.9347 L 1.182 12.9589 Z "/>
+      <path id="ID0.14121821569278836" fill="none" stroke="#FFD4AA" stroke-width="1.0436006027818858" stroke-linecap="round" d="M 2.7375 13.9678 L 30.6924 5.0222 "/>
+      <path id="ID0.804306146223098" fill="url(#grad_2-.49697521328926086,-0.15903204679489136,0.15903204679489136,0.49697521328926086,-108.35,-54.55)" stroke="#000000" stroke-width="1.0436006027818858" d="M 33.8172 1.7225 C 34.6914 1.4428 35.5771 1.4815 36.3018 1.7706 C 37.0264 2.0592 37.5901 2.5982 37.8203 3.3178 C 38.0506 4.0374 37.9046 4.8035 37.4822 5.4591 C 37.0599 6.1153 36.3612 6.661 35.487 6.9407 C 34.6129 7.2205 33.7272 7.1818 33.0024 6.8927 C 32.2778 6.6041 31.7142 6.0651 31.4839 5.3455 C 31.2536 4.6258 31.3997 3.8598 31.8221 3.2041 C 32.2444 2.548 32.943 2.0022 33.8172 1.7225 Z "/>
+    </g>
+  </g>
+</svg>
